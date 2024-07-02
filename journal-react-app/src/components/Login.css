@@ -1,0 +1,169 @@
+.sign-in-heading {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #333;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sign-in-sub-heading {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #4e4e4e;
+}
+
+.google-sign-in-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    padding: 10px 20px;
+    width: 100%;
+    font-size: 16px;
+    color: #444;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.google-sign-in-button:hover {
+    background-color: #f7f7f7;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.google-logo {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+}
+
+.google-sign-in-container {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* .sign-in-with-email {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+} */
+
+
+.email-sign-in-heading {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 550;
+    font-size: 16px;
+    color: #838383;
+}
+
+.separator-container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+}
+  
+.separator::before,
+.separator::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #838383;
+}
+  
+.separator:not(:empty)::before {
+    margin-right: .25em;
+}
+  
+.separator:not(:empty)::after {
+    margin-left: .25em;
+}
+
+.login-container {
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    margin: 5vh;
+    padding: 4%;
+    width: 60vh;
+}
+
+.forgot-password {
+    margin-top: 2vh;
+    display: flex;
+    justify-content: center;
+}
+
+.forgot-password-button {
+    border: #ffffff;
+    background-color: #ffffff;
+    color: #838383;
+}
+
+.forgot-password-button:hover {
+    border: #ffffff;
+    background-color: #ffffff;
+    color: #036bfc;
+    text-decoration: underline;
+    transition: ease-in-out 0.3s;
+}
+
+.new-here {
+    margin-top: 2vh;
+    display: flex;
+    justify-content: center;
+}
+
+.new-here-button {
+    border: #ffffff;
+    background-color: #ffffff;
+    color: #faa340;
+}
+
+.new-here-button:hover {
+    border: #ffffff;
+    background-color: #ffffff;
+    color: #036bfc;
+    text-decoration: underline;
+    transition: ease-in-out 0.3s;
+}
+
+.dont-have-account {
+    margin-top: 2vh;
+    display: flex;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: smaller;
+    font-weight: 300;
+    color: #838383;
+}
+
+.sign-in-error-messages {
+    margin-top: 1vh;
+    display: flex;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: smaller;
+    font-weight: 300;
+    color: #ff0000;
+}
+
+.text-container {
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    padding: 10px;
+}

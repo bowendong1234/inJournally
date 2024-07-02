@@ -1,0 +1,86 @@
+/* src/FormStyles.css */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-field input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #faa340;
+    border: none;
+    border-radius: 18px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-button:hover {
+    background-color: #f85220;
+}
+
+.form-field-error {
+    margin-bottom: 15px;
+}
+
+.form-field-error label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-field-error input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ff0000;
+    border-radius: 18px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-field-error input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.go-back-to-sign-in-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 18px;
+    color: #faa340;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
