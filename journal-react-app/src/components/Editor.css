@@ -1,0 +1,31 @@
+.inner-editor-container {
+    width: 50vw;
+    height: 80vh;
+    background-color: #ffffff;
+    padding: 5%;
+    border-radius: 1px;
+    display: flex;
+    justify-content: center;
+}
+
+.outer-editor-container {
+    width: 57vw;
+    height: 94vh;
+    background-color: #ffffff;
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (min-width: 651px) {
+    .ce-block__content, .ce-toolbar__content {
+      max-width: calc(100%) !important;
+      margin-left: 2%;
+      margin-right: 2%
+    }
+  }
+  
+  .cdx-block {
+    max-width: 100% !important;
+  }

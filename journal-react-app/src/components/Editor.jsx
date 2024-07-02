@@ -6,6 +6,8 @@ import Link from '@editorjs/link'
 import Checklist from '@editorjs/checklist'
 import Embed from '@editorjs/embed'
 import React, { useEffect, useRef } from 'react';
+import "./Editor.css"
+import {Scrollbar} from 'smooth-scrollbar-react';
 
 const editorContainerStyle = {
   minWidth: '700px',
@@ -177,9 +179,13 @@ const Editor = () => {
   };
 
   return (
-    <div>
-      <EditorHeader text="hello123" saveButton={<button onClick={handleSave}>Save</button>} gap='40px'/>
-      <div ref={editorContainerRef} style={editorContainerStyle}></div>
+    <div class="outer-editor-container">
+      <Scrollbar>
+        <div className="inner-editor-container">
+          <EditorHeader text="hello123" saveButton={<button onClick={handleSave}>Save</button>} gap='40px'/>
+          <div ref={editorContainerRef} ></div>
+        </div>
+      </Scrollbar>
     </div>
   );
 };
