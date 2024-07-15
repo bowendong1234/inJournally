@@ -12,9 +12,7 @@ const SignUpPage = () => {
 
     return (
         <div class="background">
-            <div>
-                <SignUp onBackToSignInClick={handleBackToLoginClick} />
-            </div>
+            <SignUp onBackToSignInClick={handleBackToLoginClick} />
         </div>
     )
 }
