@@ -69,7 +69,7 @@ const Login = ( { onSignUpClick, onForgotPasswordClick}) => {
         <img src="/images/inJournally_logo.png" alt="inJournally Logo" className="google-logo" />
       </div> */}
       <div class="sign-in-heading">
-        <h1>Sign in to inJournally</h1>
+        Sign in
       </div>
       <div class="google-sign-in-container">
         <GoogleSignInButton />

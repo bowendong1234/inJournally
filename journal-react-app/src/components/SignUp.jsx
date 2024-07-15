@@ -50,7 +50,7 @@ const SignUp = ( { onBackToSignInClick }) => {
   return (
     <div class="login-container">
       <div class="sign-in-heading">
-        <h1>Sign up</h1>
+        Sign up
       </div>
       <div class="google-sign-in-container">
         <GoogleSignInButton />
@@ -83,9 +83,7 @@ const SignUp = ( { onBackToSignInClick }) => {
             <div>
               <button type="submit" class="form-button">Sign Up</button>
             </div>
-            <div>
-                <button onClick={onBackToSignInClick} class="go-back-to-sign-in-button">go back to sign in</button>
-            </div>
+            <button onClick={onBackToSignInClick} class="go-back-to-sign-in-button">Go back to sign in</button>
           </div>
         </form>
       </div>

@@ -5,6 +5,7 @@
     width: 80%;
     margin: 0 auto;
     padding: 10px;
+    justify-content: center;
 }
 
 .form-field {
@@ -71,7 +72,7 @@
     outline: none;
 }
 
-.go-back-to-sign-in-button {
+/* .go-back-to-sign-in-button {
     width: 100%;
     padding: 10px;
     background-color: #ffffff;
@@ -82,5 +83,20 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-top: 10px;
+} */
+
+.go-back-to-sign-in-button {
+    background-color: #ffffff;
+    border: none;
+    color: #faa340;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 14px;
+}
+
+.go-back-to-sign-in-button:hover {
+    color: #036bfc;
+    transition: 0.3s ease-in-out;
+    text-decoration: underline;
 }
 

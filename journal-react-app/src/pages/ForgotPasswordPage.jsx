@@ -12,9 +12,7 @@ const ForgotPasswordPage = () => {
 
     return (
         <div class="background">
-            <div>
-                <ForgotPassword onBackToSignInClick={handleBackToLoginClick} />
-            </div>
+            <ForgotPassword onBackToSignInClick={handleBackToLoginClick} />
         </div>
     )
 }
