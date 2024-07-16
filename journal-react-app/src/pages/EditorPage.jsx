@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Editor from '../components/Editor.jsx'
 import './EditorPage.css'
 import { useParams, useNavigate } from 'react-router-dom'
+import TopBar from '../components/TopBar';
 
 const EditorPage = () => {
     const navigate = useNavigate();
@@ -16,8 +17,13 @@ const EditorPage = () => {
   
 
     return (
-        <div class="background">
+        <div class="background topbar-to-contents-container">
+            <TopBar />
             <Editor />
+            {/* <div class="topbar-to-contents-container">
+                <TopBar />
+                <Editor />
+            </div> */}
         </div>
     )
 }

@@ -2,21 +2,21 @@
     width: 50vw;
     height: 80vh;
     background-color: #ffffff;
-    padding-left: 50px;
     border-radius: 1px;
     display: flex;
     justify-content: center;
 }
 
 .outer-editor-container {
-    width: 57vw;
-    height: 94vh;
+    width: 54vw;
+    height: 86%;
     background-color: #ffffff;
     border-radius: 18px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-top: 60px;
 }
 
 .editor-header {

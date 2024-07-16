@@ -1,0 +1,47 @@
+.topbar-container {
+    width: 100%;
+    height: 66px;
+    background-color: #ffffff;
+    top: 0;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.datepicker-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+    position: absolute;
+    left: 3px;
+    top: 13px;
+}
+
+/* .topbar-container {
+    width: 100%;
+    height: 66px;
+    background-color: #ffffff;
+    top: 0;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.datepicker-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+} */

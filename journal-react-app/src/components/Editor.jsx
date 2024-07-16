@@ -156,7 +156,7 @@ const Editor = () => {
 
   return (
     <div class="outer-editor-container">
-      <EditorHeader saveButton={<button onClick={handleSave}>Save</button>}/>
+      {/* <EditorHeader saveButton={<button onClick={handleSave}>Save</button>}/> */}
       <Scrollbar>
         <div className="inner-editor-container">
           <div ref={editorContainerRef} ></div>
