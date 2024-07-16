@@ -8,13 +8,10 @@ import Embed from '@editorjs/embed'
 import React, { useEffect, useRef } from 'react';
 import "./Editor.css"
 import {Scrollbar} from 'smooth-scrollbar-react';
-
-const editorContainerStyle = {
-  minWidth: '700px',
-  overflow: 'auto',
-  height: '100%',
-  padding: '10px'
-};
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 const getEditorHeaderStyle = (gap) => ({
   display: 'flex',
@@ -23,11 +20,19 @@ const getEditorHeaderStyle = (gap) => ({
 });
 
 const EditorHeader = ({ text, saveButton, gap }) => {
+
+  const testDate = (date) => {
+    console.log(date)
+  }
+
   return (
-    <div style={getEditorHeaderStyle(gap)}>
-      <h2>{text}</h2>
-      {saveButton}
-    </div>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <div style={getEditorHeaderStyle(gap)}>
+        <h2>{text}</h2>
+        {saveButton}
+        <DatePicker defaultValue={dayjs()} format="LL" onChange={(newValue) => testDate(newValue)}/>
+      </div>
+    </LocalizationProvider>
   );
 };
 
@@ -180,9 +185,9 @@ const Editor = () => {
 
   return (
     <div class="outer-editor-container">
+      <EditorHeader text="hello123" saveButton={<button onClick={handleSave}>Save</button>} gap='40px'/>
       <Scrollbar>
         <div className="inner-editor-container">
-          <EditorHeader text="hello123" saveButton={<button onClick={handleSave}>Save</button>} gap='40px'/>
           <div ref={editorContainerRef} ></div>
         </div>
       </Scrollbar>
