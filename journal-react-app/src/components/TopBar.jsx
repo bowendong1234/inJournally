@@ -21,7 +21,7 @@ const TopBar = () => {
                 <img src="/images/inJournally_logo.png" alt="Logo" class="logo"></img>
             </div>
             <div class="datepicker-container">
-                <DatePicker defaultValue={dayjs()} format="LL" onChange={handleDateChange}/>
+                <DatePicker defaultValue={dayjs()} format="LL" onChange={handleDateChange} slotProps={{ textField: { size: 'small' } }}/>
             </div>
         </div>
       </LocalizationProvider>

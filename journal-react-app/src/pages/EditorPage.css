@@ -6,10 +6,11 @@
 }
 
 .topbar-to-contents-container {
-    display: flex;
-    flex-direction: column;
+    position: fixed;
+    top: 66px;
     width: 100vw;
-    margin: 0px;
+    height: 100%;
+
 }
 
 .right-column-container {

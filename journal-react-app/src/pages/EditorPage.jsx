@@ -17,13 +17,11 @@ const EditorPage = () => {
   
 
     return (
-        <div class="background topbar-to-contents-container">
+        <div class="background">
             <TopBar />
-            <Editor />
-            {/* <div class="topbar-to-contents-container">
-                <TopBar />
+            <div class="topbar-to-contents-container">
                 <Editor />
-            </div> */}
+            </div>
         </div>
     )
 }

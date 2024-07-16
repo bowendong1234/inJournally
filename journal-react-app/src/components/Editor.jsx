@@ -1,7 +1,7 @@
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
-import Image from '@editorjs/image'
+import ImageTool from '@editorjs/image'
 import Link from '@editorjs/link'
 import Checklist from '@editorjs/checklist'
 import Embed from '@editorjs/embed'
@@ -110,8 +110,13 @@ const Editor = () => {
           inlineToolbar: true,
         },
         image: {
-          class: Image,
+          class: ImageTool,
           inlineToolbar: true,
+          config: {
+            endpoints: {
+              byFile: 'http://localhost:3000/api/upload',
+            }
+          }
         },
         link: {
           class: Link,
