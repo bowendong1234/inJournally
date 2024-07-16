@@ -19,6 +19,12 @@
     flex-direction: column;
 }
 
+.editor-header {
+  display: 'flex';
+  align-items: center;
+}
+
+
 @media (min-width: 651px) {
     .ce-block__content, .ce-toolbar__content {
       max-width: calc(100%) !important;
@@ -30,3 +36,4 @@
   .cdx-block {
     max-width: 100% !important;
   }
+

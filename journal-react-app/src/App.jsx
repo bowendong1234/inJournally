@@ -13,7 +13,7 @@ function App() {
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
       <Route 
-        path="/editor" 
+        path="/editor/:date" 
         element={
           <PrivateRoute>
             <EditorPage />

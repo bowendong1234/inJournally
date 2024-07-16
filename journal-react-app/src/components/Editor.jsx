@@ -11,58 +11,29 @@ import {Scrollbar} from 'smooth-scrollbar-react';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-const getEditorHeaderStyle = (gap) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: gap || '0px', // default to '0px' if no gap is provided
-});
 
-const EditorHeader = ({ text, saveButton, gap }) => {
+const EditorHeader = ({ saveButton}) => {
+  let text = "";
+  const navigate = useNavigate();
 
-  const testDate = (date) => {
-    console.log(date)
-  }
+  const handleDateChange = (newValue) => {
+    const formattedDate = newValue.format('YYYY-MM-DD');
+    navigate(`/editor/${formattedDate}`);
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div style={getEditorHeaderStyle(gap)}>
-        <h2>{text}</h2>
+      <div class="editor-header">
+        {text}
         {saveButton}
-        <DatePicker defaultValue={dayjs()} format="LL" onChange={(newValue) => testDate(newValue)}/>
+        <DatePicker defaultValue={dayjs()} format="LL" onChange={handleDateChange}/>
       </div>
     </LocalizationProvider>
   );
 };
-
-function formatDate(date) {
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  let formattedDate = "";
-
-  if (date == null) {
-    const date = new Date();
-    const dayOfWeek = daysOfWeek[date.getDay()];
-    const day = date.getDate();
-    const month = monthsOfYear[date.getMonth()];
-    const year = date.getFullYear();
-
-    let daySuffix;
-    if (day % 10 === 1 && day !== 11) {
-        daySuffix = "st";
-    } else if (day % 10 === 2 && day !== 12) {
-        daySuffix = "nd";
-    } else if (day % 10 === 3 && day !== 13) {
-        daySuffix = "rd";
-    } else {
-        daySuffix = "th";
-    }
-
-    formattedDate = `${dayOfWeek} ${day}${daySuffix} ${month}, ${year}`;
-  }
-  return formattedDate;
-}
 
 const Editor = () => {
   const editorInstance = useRef(null);
@@ -185,7 +156,7 @@ const Editor = () => {
 
   return (
     <div class="outer-editor-container">
-      <EditorHeader text="hello123" saveButton={<button onClick={handleSave}>Save</button>} gap='40px'/>
+      <EditorHeader saveButton={<button onClick={handleSave}>Save</button>}/>
       <Scrollbar>
         <div className="inner-editor-container">
           <div ref={editorContainerRef} ></div>

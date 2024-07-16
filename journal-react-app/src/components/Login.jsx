@@ -13,6 +13,7 @@ const GoogleSignInButton = () => {
   const auth = getAuth(firebase);
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
+  const today = dayjs().format('YYYY-MM-DD')
 
   const handleGoogleSignIn = () => {
     const provider = new GoogleAuthProvider();
@@ -23,7 +24,7 @@ const GoogleSignInButton = () => {
         console.log(result.user.uid);
         setCurrentUser(result.user);
         // localStorage.setItem('userID', result.user.uid);
-        navigate('/editor');
+        navigate('/editor/${today}');
       })
       .catch((error) => {
         console.error(error);
@@ -73,7 +74,7 @@ const Login = ( { onSignUpClick, onForgotPasswordClick}) => {
         <img src="/images/inJournally_logo.png" alt="inJournally Logo" className="google-logo" />
       </div> */}
       <div class="sign-in-heading">
-        Sign in
+        Login
       </div>
       <div class="google-sign-in-container">
         <GoogleSignInButton />
@@ -102,7 +103,7 @@ const Login = ( { onSignUpClick, onForgotPasswordClick}) => {
               <input type="password" name="password" placeholder="Password" required />
             </div>
             <div>
-              <button type="submit" class="form-button">Sign In</button>
+              <button type="submit" class="form-button">Login</button>
             </div>
           </div>
         </form>

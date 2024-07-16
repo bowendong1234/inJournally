@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Editor from '../components/Editor.jsx'
 import './EditorPage.css'
-import { useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 const EditorPage = () => {
-    // const [showSignIn, setShowSignIn] = useState(true);
-    // const [showForgotPassword, setShowForgotPassword] = useState(false);
     const navigate = useNavigate();
+    const { date } = useParams();
 
-    const handleSignUpClick = () => {
-    //   setShowSignIn(false);
-        navigate('/signup');
-    };
+    useEffect(() => {
+        if (!date) {
+          const today = dayjs().format('YYYY-MM-DD');
+          navigate(`/editor/${today}`);
+        }
+    }, [date, navigate]);
   
 
     return (
