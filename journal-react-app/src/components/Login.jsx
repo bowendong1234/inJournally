@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { firebase } from '../Firebase';
 import 'firebaseui/dist/firebaseui.css';
 import './Login.css';
 import './FormStyles.css';
+import { useAuth } from '../contexts/AuthContext';
 
 // TODO: might wanna rename all the 'login' stuff to 'sign in'
 
 const GoogleSignInButton = () => {
   const auth = getAuth(firebase);
   const navigate = useNavigate();
+  const { setCurrentUser } = useAuth();
 
   const handleGoogleSignIn = () => {
     const provider = new GoogleAuthProvider();
@@ -19,6 +21,7 @@ const GoogleSignInButton = () => {
         // Successfully signed in
         console.log(result.user);
         console.log(result.user.uid);
+        setCurrentUser(result.user);
         // localStorage.setItem('userID', result.user.uid);
         navigate('/editor');
       })
@@ -26,6 +29,7 @@ const GoogleSignInButton = () => {
         console.error(error);
       });
   };
+
 
   return (
       <button className="google-sign-in-button" onClick={handleGoogleSignIn}>
