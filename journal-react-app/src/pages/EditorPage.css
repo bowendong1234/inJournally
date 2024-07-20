@@ -1,17 +1,20 @@
 .background {
     background: rgb(238,174,201);
     background: radial-gradient(circle, rgba(238,174,201,1) 22%, rgba(233,195,148,1) 100%);
-    height: 100vh;
+    max-height: 100vh;
     width: 100vw;
 }
 
 .topbar-to-contents-container {
-    position: fixed;
+    position: absolute; /* Changed to absolute */
+    display: flex;
     top: 66px;
-    width: 100vw;
-    height: 100%;
-
-}
+    bottom: 0; /* Align to bottom */
+    left: 0;
+    right: 0;
+    padding: 15px; /* Shorthand for padding */
+    box-sizing: border-box; /* Ensure padding is included in the height calculation */
+  }
 
 .right-column-container {
     display: flex;
