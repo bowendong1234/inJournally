@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Editor from '../components/Editor.jsx'
 import './EditorPage.css'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -6,6 +6,7 @@ import TopBar from '../components/TopBar';
 
 const EditorPage = () => {
     const navigate = useNavigate();
+    const editorRef = useRef()
     const { date } = useParams();
 
     useEffect(() => {
@@ -15,12 +16,19 @@ const EditorPage = () => {
         }
     }, [date, navigate]);
   
+    const handleSaveOnDateChange = () => {
+        if (editorRef.current) {
+            editorRef.current.handleSave();
+            editorRef.current.loadData();
+        }
+        
+    }
 
     return (
         <div class="background">
-            <TopBar />
+            <TopBar handleSaveOnDateChange={handleSaveOnDateChange}/>
             <div class="topbar-to-contents-container">
-                <Editor />
+                <Editor ref={editorRef}/>
             </div>
         </div>
     )
