@@ -16,6 +16,7 @@ Firebase.jsx
 firebase.json
 functions
 uploads
+serviceAccountKey.json
 
 # Editor directories and files
 .vscode/*
