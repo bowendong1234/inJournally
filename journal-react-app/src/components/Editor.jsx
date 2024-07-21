@@ -12,7 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { db } from "../Firebase"
 import { useAuth } from '../contexts/AuthContext';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 
 const Editor = React.forwardRef((props, ref) => {
   const editorInstance = useRef(null);
@@ -21,33 +21,7 @@ const Editor = React.forwardRef((props, ref) => {
   const date = useParams();
 
   // TODO check if data already exists for the date
-  let journal_entry_data = {
-    "blocks": [
-      {
-          "id": "oUq2g_tl8y",
-          "type": "header",
-          "data": {
-            "text": "Editor.js",
-            "level": 2
-          }
-      },
-      {
-          "id": "AOulAjL8XM",
-          "type": "header",
-          "data": {
-            "text": "What does it mean «block-styled editor»",
-            "level": 3
-          }
-      },
-      {
-          "id": "cyZjplMOZ0",
-          "type": "paragraph",
-          "data": {
-            "text": "Workspace in classic editors is made of a single contenteditable element, used to create different HTML markups. Editor.js <mark class=\"cdx-marker\">workspace consists of separate Blocks: paragraphs, headings, images, lists, quotes, etc</mark>. Each of them is an independent contenteditable element (or more complex structure) provided by Plugin and united by Editor's Core."
-          }
-      }
-    ],
-  }
+  let journal_entry_data = {}
 
   useEffect(() => {
     if (!editorContainerRef.current) return;
@@ -96,6 +70,10 @@ const Editor = React.forwardRef((props, ref) => {
     };
   }, []);
 
+  useEffect(() => {
+    loadData();
+  }, [])
+
   const handleSave = async () => {
     const uid = currentUser.uid;
     let imageUrls = [];
@@ -119,11 +97,6 @@ const Editor = React.forwardRef((props, ref) => {
     formData.append('userId', uid);
     formData.append('date', date.date);
     formData.append('imageUrls', JSON.stringify(imageUrls))
-    // const payload = {
-    //   userId: uid,
-    //   date: date.date,
-    //   imageUrls: imageUrls,
-    // };
 
     try {
       const response = await fetch('http://localhost:3000/api/uploadToFirebase', {
@@ -144,8 +117,57 @@ const Editor = React.forwardRef((props, ref) => {
   };
 
   const loadData = async () => {
-    console.log("pass");
-    // journal_entry_data = {"blocks" : []}
+    const uid = currentUser.uid;
+    let imageUrls = []
+    const docRef = doc(db, `Users/${uid}/UserEntries`, `${date.date}`)
+    const entry = await getDoc(docRef);
+    console.log(date)
+    console.log("This happened hehe")
+    if (entry.exists()) {
+      journal_entry_data = entry.data().outputData;
+      console.log(journal_entry_data)
+      journal_entry_data.blocks.forEach(block => {
+        if (block.type == "image") {
+          imageUrls.push(block.data.file.url)
+          console.log(imageUrls)
+        }
+      });
+    } else {
+      journal_entry_data = {
+        "blocks": [
+          {
+              "id": "doesnt matterrrr",
+              "type": "header",
+              "data": {
+                "text": `${date}`,
+                "level": 2
+              }
+          }]
+      }
+    }
+
+    if (imageUrls.length > 0) {
+      const formData = new FormData();
+      formData.append('userId', uid);
+      formData.append('date', date.date);
+      formData.append('imageUrls', JSON.stringify(imageUrls))
+      try {
+        const response = await fetch('http://localhost:3000/api/getImagesFromFirebase', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+    
+        // if (result.success) {
+        //   console.log('images retrieved successfully.');
+        // } else {
+        //   console.error('Failed to get images');
+        // }
+      } catch (error) {
+        console.error('Error in load data:', error);
+      }
+    }
+    console.log(journal_entry_data)
     editorInstance.current.render(journal_entry_data);
   }
 

@@ -12,13 +12,27 @@ const EditorPage = () => {
     useEffect(() => {
         if (!date) {
           const today = dayjs().format('YYYY-MM-DD');
+          console.log(today)
           navigate(`/editor/${today}`);
         }
     }, [date, navigate]);
+
+    useEffect(() => {
+        if (editorRef.current) {
+            editorRef.current.loadData();
+        }
+    }, [date]);
   
     const handleSaveOnDateChange = () => {
         if (editorRef.current) {
-            editorRef.current.handleSave();
+            // editorRef.current.handleSave();
+        }
+        
+    }
+
+    const handleLoadOnDateChange = () => {
+        if (editorRef.current) {
+            console.log(date);
             editorRef.current.loadData();
         }
         

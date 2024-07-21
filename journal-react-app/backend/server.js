@@ -53,7 +53,7 @@ app.post('/api/uploadToFirebase', upload.single('image'), async (req, res) => {
     const filename = parts[parts.length - 1];
     
     const localFilePath = path.join(__dirname, 'uploads', filename);
-    const remoteFilePath = `Users/${userId}/UserEntries/${date}/${filename}`;
+    const remoteFilePath = `Users/${userId}/${date}/Images/${filename}`;
 
     try {
       const contentType = mime.lookup(localFilePath) || 'application/octet-stream';
@@ -91,6 +91,47 @@ app.post('/api/uploadToFirebase', upload.single('image'), async (req, res) => {
   } catch (error) {
     res.status(500).send(error.message);
   }
+});
+
+// route for retrieving images from firebase
+app.post('/api/getImagesFromFirebase', upload.single('image'), async (req, res) => {
+  const { userId, date, imageUrls } = req.body;
+  
+  if (!userId || !date || !imageUrls) {
+    return res.status(400).send('Invalid request body.');
+  }
+  const imageUrlsArray = JSON.parse(imageUrls);
+  console.log("got here")
+
+  const fileURetrievalPromises = imageUrlsArray.map(async (imageUrl) => {
+    const parts = imageUrl.split('/');
+    const filename = parts[parts.length - 1];
+    const localFilePath = path.join(__dirname, 'uploads', filename);
+    if (!fs.existsSync(localFilePath)) {
+      console.log('getting image');
+      const remoteFilePath = `Users/${userId}/${date}/Images/${filename}`;
+      console.log(remoteFilePath)
+      const image = bucket.file(remoteFilePath)
+      const [exists] = await image.exists();
+      if (exists) {
+        console.log("this happeneded")
+        const [contents] = await image.download({destination: localFilePath});
+      }
+    } else {
+        console.log('File already exists');
+    }
+  });
+  try {
+    const results = await Promise.all(fileURetrievalPromises);
+    console.log(results)
+    res.send(results);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+  return {
+    success: 1,
+  };
+
 });
 
 app.post('/api/upload', upload.single('image'), (req, res) => {
