@@ -139,7 +139,7 @@ const Editor = React.forwardRef((props, ref) => {
               "id": "doesnt matterrrr",
               "type": "header",
               "data": {
-                "text": `${date}`,
+                "text": `${date.date}`,
                 "level": 2
               }
           }]

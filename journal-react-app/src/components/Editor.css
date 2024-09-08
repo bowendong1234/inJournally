@@ -5,6 +5,9 @@
     border-radius: 1px;
     display: flex;
     justify-content: center;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
 }
 
 .outer-editor-container {
@@ -41,6 +44,17 @@
 .save-button {
   width: 60px;
   height: 30px;
+  margin-left: 14px;
+  background-color: #faa340;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #f85220;
 }
 
 .image-tool__caption {

@@ -25,7 +25,8 @@ const GoogleSignInButton = () => {
         console.log(result.user.uid);
         setCurrentUser(result.user);
         // localStorage.setItem('userID', result.user.uid);
-        navigate('/editor/${today}');
+        localStorage.setItem('selectedDate', today);
+        navigate(`/editor/${today}`);
       })
       .catch((error) => {
         console.error(error);
@@ -54,7 +55,8 @@ const Login = ( { onSignUpClick, onForgotPasswordClick}) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log(userCredential.user);
-        navigate('/editor');
+        localStorage.setItem('selectedDate', today);
+        navigate(`/editor/${today}`);
       })
       .catch((error) => {
         setSignInError(true)

@@ -5,13 +5,17 @@ import { useParams, useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar';
 
 const EditorPage = () => {
+    console.log("editor page rendered")
     const navigate = useNavigate();
     const editorRef = useRef()
     const { date } = useParams();
+    console.log(date)
 
     useEffect(() => {
+        console.log("use effect triggered")
         if (!date) {
           const today = dayjs().format('YYYY-MM-DD');
+          console.log("here")
           console.log(today)
           navigate(`/editor/${today}`);
         }
