@@ -121,8 +121,6 @@ const Editor = React.forwardRef((props, ref) => {
     let imageUrls = []
     const docRef = doc(db, `Users/${uid}/UserEntries`, `${date.date}`)
     const entry = await getDoc(docRef);
-    console.log(date)
-    console.log("This happened hehe")
     if (entry.exists()) {
       journal_entry_data = entry.data().outputData;
       console.log(journal_entry_data)
@@ -151,6 +149,10 @@ const Editor = React.forwardRef((props, ref) => {
       formData.append('userId', uid);
       formData.append('date', date.date);
       formData.append('imageUrls', JSON.stringify(imageUrls))
+      console.log(uid)
+      console.log(date.date)
+      console.log(JSON.stringify(imageUrls))
+      console.log(formData)
       try {
         const response = await fetch('http://localhost:3000/api/getImagesFromFirebase', {
           method: 'POST',
