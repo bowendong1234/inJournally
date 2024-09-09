@@ -6,19 +6,21 @@
 }
 
 .topbar-to-contents-container {
-    position: absolute; /* Changed to absolute */
+    position: absolute;
     display: flex;
     top: 66px;
-    bottom: 0; /* Align to bottom */
+    bottom: 0;
     left: 0;
     right: 0;
-    padding: 15px; /* Shorthand for padding */
-    box-sizing: border-box; /* Ensure padding is included in the height calculation */
+    padding: 15px; 
+    box-sizing: border-box;
   }
 
 .right-column-container {
     display: flex;
     justify-content: center;
     flex-direction: column;
+    width: 44vw;
+    padding-left: 15px;
 }
 
