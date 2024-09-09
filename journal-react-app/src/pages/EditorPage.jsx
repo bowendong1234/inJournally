@@ -3,6 +3,8 @@ import Editor from '../components/Editor.jsx'
 import './EditorPage.css'
 import { useParams, useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar';
+import dayjs from 'dayjs';
+import Spotify from '../components/Spotify.jsx'
 
 const EditorPage = () => {
     console.log("editor page rendered")
@@ -13,7 +15,7 @@ const EditorPage = () => {
 
     useEffect(() => {
         console.log("use effect triggered")
-        if (!date) {
+        if (!date || date=="redirect") {
           const today = dayjs().format('YYYY-MM-DD');
           console.log("here")
           console.log(today)
@@ -47,6 +49,10 @@ const EditorPage = () => {
             <TopBar handleSaveOnDateChange={handleSaveOnDateChange}/>
             <div class="topbar-to-contents-container">
                 <Editor ref={editorRef}/>
+                <div class="right-column-container">
+                    <Spotify></Spotify>
+                </div>
+
             </div>
         </div>
     )
