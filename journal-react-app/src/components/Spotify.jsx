@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 
 
+
 const Spotify = () => {
     const { currentUser } = useAuth();
     let date = useParams()
@@ -65,10 +66,19 @@ const Spotify = () => {
         }
     }
 
+    const loginToSpotify = () => {
+        try {
+            window.location.href = 'http://localhost:3000/spotify/authorise'; // Redirects to the backend route
+        } catch (error) {
+            console.error('Error when authorising user', error);
+        }
+    };
+
     return (
         <div class="outer-spotify-container">
             {songs} {artists} {genres}
             <button onClick={getAccessToken}>test token</button>
+            <button onClick={loginToSpotify}>spotify login</button>
         </div>
     )
 }

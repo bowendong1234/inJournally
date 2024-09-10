@@ -76,6 +76,7 @@ const Editor = React.forwardRef((props, ref) => {
 
   const handleSave = async () => {
     const uid = currentUser.uid;
+    console.log(uid)
     let imageUrls = [];
     const documentPath = `Users/${uid}/UserEntries/${date.date}`;
     try {

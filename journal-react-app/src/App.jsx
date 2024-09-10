@@ -5,6 +5,7 @@ import SignUpPage from './pages/SignUpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import EditorPage from './pages/EditorPage';
 import PrivateRoute from './PrivateRoute';
+import SpotifyAuth from './pages/SpotifyAuth';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+      <Route path="/spotify/callback" element={<SpotifyAuth />} />
       <Route 
         path="/editor/:date" 
         element={
