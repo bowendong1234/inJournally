@@ -44,7 +44,7 @@ async function pollSpotifyStreams() {
             try {
                 const streams = await fetchSpotifyStreams(accessToken);
                 // console.log(streams)
-                await saveStreamsToDatabase(user.uid, streams); // Store in your database
+                await saveStreamsToDatabase(user.uid, streams, accessToken); // Store in your database
             } catch (err) {
                 // Handle token refresh logic or other errors
                 console.error("error when fetching streams", err)
@@ -84,21 +84,32 @@ async function getUsersFromFirebase() {
     }
 }
 
-async function saveStreamsToDatabase(uid, streams) {
+async function saveStreamsToDatabase(uid, streams, accessToken) {
     const today = dayjs().format('YYYY-MM-DD');
     for (const stream of streams) {
         const artistName = stream.track.artists[0].name; 
         const artistId = stream.track.artists[0].id
         const songName = stream.track.name;
-        const songImageUrl = stream.track.album.images[0].url; 
+        const songImageUrl = stream.track.album.images[0].url;
+        const artistImageUrl = await getArtistImageUrl(artistId, accessToken)
         const playedAt = stream.played_at;
         const playDate = dayjs(playedAt).format('YYYY-MM-DD');
         if (playDate == today) {
-            const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId }
+            const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
             const docPath = `Users/${uid}/UserStreaming/${today}/Streams/${playedAt}`;
             await db.doc(docPath).set(streamDetails, { merge: true })
         }
     }
+}
+
+async function getArtistImageUrl(artistId, accessToken) {
+    const response = await axios.get(`https://api.spotify.com/v1/artists/${artistId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+    console.log(response.data.images[0].url)
+    return response.data.images[0].url;  
 }
 
 async function getNewToken(spotifyRefreshToken, userID) {
@@ -138,8 +149,6 @@ async function getNewToken(spotifyRefreshToken, userID) {
             console.error("error when trying to update new refreshed token", error)
         }
 
-
-
     } catch (error) {
         console.error('Error fetching access token:', error);
         res.redirect('/?' +
@@ -150,4 +159,4 @@ async function getNewToken(spotifyRefreshToken, userID) {
     }
 }
 
-module.exports = { getAccessToken, pollSpotifyStreams };
+module.exports = { getAccessToken, pollSpotifyStreams};

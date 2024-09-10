@@ -39,7 +39,7 @@ const Spotify = () => {
             let allStreams = []
             querySnap.forEach((docSnap) => {
                 const streamData = docSnap.data()
-                allStreams.push([streamData.song, streamData.artist, streamData.song_image_url, streamData.artist_id])
+                allStreams.push([streamData.song, streamData.artist, streamData.song_image_url, streamData.artist_id, streamData.artist_image_url])
             })
             calculateTop(allStreams)
         };
@@ -48,7 +48,7 @@ const Spotify = () => {
     const calculateTop = (allStreams) => {
         const songFrequencyMap = {};
         const artistFrequencyMap = {};
-        allStreams.forEach(([song, artist, song_image_url, artist_id]) => {
+        allStreams.forEach(([song, artist, song_image_url, artist_id, artist_image_url]) => {
             // song frequencies
             const songKey = `${song}:${artist}`;
             if (songFrequencyMap[songKey]) {
@@ -60,7 +60,7 @@ const Spotify = () => {
             if (artistFrequencyMap[artist_id]) {
                 artistFrequencyMap[artist_id].count += 1;
             } else {
-                artistFrequencyMap[artist_id] = { count: 1, artist, artist_id };
+                artistFrequencyMap[artist_id] = { count: 1, artist, artist_id, artist_image_url };
             }
         });
 
@@ -72,15 +72,6 @@ const Spotify = () => {
         console.log("Most Frequent Artist:", mostFrequentArtist);
     };
 
-    const getAristImageUrl = async (artistId) => {
-        try {
-            const response = await fetch('http://localhost:3000/spotify/getArtistImageUrl')
-            const data = await response.json();
-            console.log(data.token)
-        } catch (error) {
-            console.error("Error when getting Spotify Access Token", error)
-        }
-    }
 
     const getAccessToken = async () => {
         try {
