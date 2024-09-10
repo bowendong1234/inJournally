@@ -87,13 +87,14 @@ async function getUsersFromFirebase() {
 async function saveStreamsToDatabase(uid, streams) {
     const today = dayjs().format('YYYY-MM-DD');
     for (const stream of streams) {
-        const artistName = stream.track.artists[0].name; // First artist name
-        const songName = stream.track.name; // Song name
-        const imageUrl = stream.track.album.images[0].url; // First image URL
+        const artistName = stream.track.artists[0].name; 
+        const artistId = stream.track.artists[0].id
+        const songName = stream.track.name;
+        const songImageUrl = stream.track.album.images[0].url; 
         const playedAt = stream.played_at;
         const playDate = dayjs(playedAt).format('YYYY-MM-DD');
         if (playDate == today) {
-            const streamDetails = { artist: artistName, song: songName, image_url: imageUrl }
+            const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId }
             const docPath = `Users/${uid}/UserStreaming/${today}/Streams/${playedAt}`;
             await db.doc(docPath).set(streamDetails, { merge: true })
         }
