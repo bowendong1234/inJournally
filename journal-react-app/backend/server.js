@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const firebaseRoutes = require('./routes/firebase'); 
 const spotifyRoutes = require('./routes/spotify');
+const { pollSpotifyStreams } = require('./services/spotifyService');
 
 const app = express();
 const port = 3000;
@@ -22,6 +23,15 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // for spotify routes
 app.use('/spotify', spotifyRoutes);
+
+const POLL_INTERVAL = 0.1 * 60 * 1000; 
+setInterval(async () => {
+  try {
+      await pollSpotifyStreams();
+  } catch (error) {
+      console.error('Error while polling Spotify streams:', error);
+  }
+}, POLL_INTERVAL);
 
 // Start the server
 app.listen(port, () => {

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { getAccessToken } = require('../services/spotifyService');  // Import the service
+const { getAccessToken } = require('../services/spotifyService'); 
 const querystring = require('querystring');
 const router = express.Router();
 const axios = require('axios');
