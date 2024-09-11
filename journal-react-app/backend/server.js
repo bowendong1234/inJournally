@@ -24,7 +24,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // for spotify routes
 app.use('/spotify', spotifyRoutes);
 
-const POLL_INTERVAL = 0.1 * 60 * 1000; 
+const POLL_INTERVAL = 15 * 60 * 1000; 
 setInterval(async () => {
   try {
       await pollSpotifyStreams();

@@ -5,8 +5,8 @@ import { doc, setDoc, updateDoc, getDoc, collection, getDocs } from 'firebase/fi
 import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 import { db } from "../Firebase"
-
-
+import Song from "./Song"
+import { Scrollbar } from 'smooth-scrollbar-react';
 
 const Spotify = () => {
     const { currentUser } = useAuth();
@@ -21,7 +21,7 @@ const Spotify = () => {
             if (!accessToken) {
                 console.log("No token user has not logged in");
             } else {
-                // setShowLogin(false)
+                setShowLogin(false)
                 console.log("Access Token:", accessToken);
                 fetchStreamingData()
             }
@@ -64,12 +64,20 @@ const Spotify = () => {
             }
         });
 
-        const sortedSongs = Object.values(songFrequencyMap).sort((a, b) => b.count - a.count);
-        const mostFrequentArtist = Object.values(artistFrequencyMap).sort((a, b) => b.count - a.count)[0];
+        const sortedSongs = Object.values(songFrequencyMap)
+            .sort((a, b) => b.count - a.count)
+            .map(({ song, artist, song_image_url }) => [song, artist, song_image_url]);
+
+        // Finding the most frequent artist
+        const mostFrequentArtist = Object.values(artistFrequencyMap)
+            .sort((a, b) => b.count - a.count)
+            .map(({ artist, artist_image_url }) => [artist, artist_image_url])[0]
 
         // Output sorted songs and most frequent artist
         console.log("Sorted Songs by Frequency:", sortedSongs);
         console.log("Most Frequent Artist:", mostFrequentArtist);
+        setTopSongs(sortedSongs)
+        setTopArtist(mostFrequentArtist)
     };
 
 
@@ -100,7 +108,7 @@ const Spotify = () => {
         console.log(userId)
         const docRef = doc(db, `Users/${userId}`)
         const userDoc = await getDoc(docRef)
-        if (!userDoc.exists()){
+        if (!userDoc.exists()) {
             console.log("empty")
             const ref = collection(db, "Users")
             await setDoc(doc(ref, userId), {
@@ -125,11 +133,50 @@ const Spotify = () => {
                     </button>
                 </div>
             ) : (
-                <div></div>
+                <Scrollbar style={{ height: '100%', width: '100%' }}>
+                    <div className="inner-spotify-container">
+                        <div className="primary-layout">
+                            {!topSongs ? (
+                                <div className="no-data-text">
+                                    No listening data for today yet.
+                                    Listening data refreshes every 15 minutes
+                                </div>
+                            ) : (
+                                <div className="topsongs-container">
+                                    <div className="song-column">
+                                        {topSongs.slice(1, 6).map((stream, index) => (
+                                            <Song
+                                                key={index}
+                                                songName={stream[0]}
+                                                artistName={stream[1]}
+                                                albumArt={stream[2]}
+                                                number={index + 2}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className="song-column">
+                                        {topSongs.slice(6, 11).map((stream, index) => (
+                                            <Song
+                                                key={index}
+                                                songName={stream[0]}
+                                                artistName={stream[1]}
+                                                albumArt={stream[2]}
+                                                number={index + 7}
+                                            />
+                                        ))}
+
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </Scrollbar>
             )}
+
 
         </div>
     )
 }
+
 
 export default Spotify;
