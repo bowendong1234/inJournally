@@ -43,7 +43,7 @@ async function pollSpotifyStreams() {
             }
             try {
                 const streams = await fetchSpotifyStreams(accessToken);
-                // console.log(streams)
+
                 await saveStreamsToDatabase(user.uid, streams, accessToken); // Store in your database
             } catch (err) {
                 // Handle token refresh logic or other errors
@@ -108,7 +108,6 @@ async function getArtistImageUrl(artistId, accessToken) {
             Authorization: `Bearer ${accessToken}`
         }
     });
-    console.log(response.data.images[0].url)
     return response.data.images[0].url;  
 }
 
@@ -148,6 +147,7 @@ async function getNewToken(spotifyRefreshToken, userID) {
         } catch (error) {
             console.error("error when trying to update new refreshed token", error)
         }
+        return access_token
 
     } catch (error) {
         console.error('Error fetching access token:', error);

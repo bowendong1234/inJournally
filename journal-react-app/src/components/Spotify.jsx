@@ -86,6 +86,7 @@ const Spotify = () => {
     const checkAccessToken = async () => {
         let accessToken = null
         const uid = localStorage.getItem("userID")
+        console.log("checkaccess token", uid)
         const docRef = doc(db, `Users/${uid}`)
         const userDoc = await getDoc(docRef)
         if (userDoc.exists()) {
@@ -94,7 +95,18 @@ const Spotify = () => {
         return accessToken
     }
 
-    const loginToSpotify = () => {
+    const loginToSpotify = async () => {
+        const userId = currentUser.uid;
+        console.log(userId)
+        const docRef = doc(db, `Users/${userId}`)
+        const userDoc = await getDoc(docRef)
+        if (!userDoc.exists()){
+            console.log("empty")
+            const ref = collection(db, "Users")
+            await setDoc(doc(ref, userId), {
+                spotifyAccessToken: null
+            })
+        }
         try {
             window.location.href = 'http://localhost:3000/spotify/authorise'; // Redirects to the backend route
         } catch (error) {

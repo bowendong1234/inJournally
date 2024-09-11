@@ -22,7 +22,8 @@ router.get('/authorise', (req, res) => {
             client_id: process.env.SPOTIFY_CLIENT_ID,
             scope: scope,
             redirect_uri: "http://localhost:5173/spotify/callback", // PLS REMEMENGER TO CHANGE THIS WHEN U DEPLOY
-            state: state
+            state: state,
+            show_dialog: true
         }));
 });
 
