@@ -31,7 +31,7 @@ const EditorPage = () => {
   
     const handleSaveOnDateChange = () => {
         if (editorRef.current) {
-            // editorRef.current.handleSave();
+            editorRef.current.handleSave();
         }
         
     }

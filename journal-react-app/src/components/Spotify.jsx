@@ -5,8 +5,9 @@ import { doc, setDoc, updateDoc, getDoc, collection, getDocs } from 'firebase/fi
 import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 import { db } from "../Firebase"
-import Song from "./Song"
 import { Scrollbar } from 'smooth-scrollbar-react';
+import Song from './Song';
+// import TopStream from './TopStream';
 
 const Spotify = () => {
     const { currentUser } = useAuth();
@@ -43,7 +44,7 @@ const Spotify = () => {
             })
             calculateTop(allStreams)
         };
-    }, []);
+    }, [date]);
 
     const calculateTop = (allStreams) => {
         const songFrequencyMap = {};
@@ -142,6 +143,12 @@ const Spotify = () => {
                                     Listening data refreshes every 15 minutes
                                 </div>
                             ) : (
+                                <div>
+                                    <div class="main-text">
+                                        Your listening on this day
+                                    </div>
+                                    
+
                                 <div className="topsongs-container">
                                     <div className="song-column">
                                         {topSongs.slice(1, 6).map((stream, index) => (
@@ -166,6 +173,7 @@ const Spotify = () => {
                                         ))}
 
                                     </div>
+                                </div>
                                 </div>
                             )}
                         </div>
