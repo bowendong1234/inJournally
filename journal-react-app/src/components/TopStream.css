@@ -1,39 +1,56 @@
-.song-container {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin-bottom: 10px;
-  }
-  
-  .album-art {
-    width: 100px;
-    height: 100px;
-    border-radius: 5px;
-    margin-right: 10px;
-    object-fit: cover;
-    margin-left: 10px
-  }
-  
-  .song-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .song-name {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin: 0;
-    color: #000;
-  }
-  
-  .artist-name {
-    font-size: 12px;
-    color: #888;
-    margin: 5px 0 0;
-  }
-  
+.top-stream-container {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  margin-bottom: 10px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.top-stream-album-art {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  margin-right: 10px;
+  object-fit: cover;
+  margin-left: 10px
+}
+
+.top-stream-song-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-stream-song-name {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin: 0;
+  color: #000;
+}
+
+.top-stream-artist-name {
+  font-size: 12px;
+  color: #888;
+  margin: 5px 0 0;
+}
+
+.top-artist-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  margin-right: 10px;
+  object-fit: cover;
+  margin-left: 10px
+}
+
+.top-artist-name {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin: 0;
+  color: #000; 
+}

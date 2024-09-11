@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 import { db } from "../Firebase"
 import { Scrollbar } from 'smooth-scrollbar-react';
 import Song from './Song';
-// import TopStream from './TopStream';
+import TopStreamComponent from './TopStream';
 
 const Spotify = () => {
     const { currentUser } = useAuth();
@@ -136,18 +136,24 @@ const Spotify = () => {
             ) : (
                 <Scrollbar style={{ height: '100%', width: '100%' }}>
                     <div className="inner-spotify-container">
-                        <div className="primary-layout">
+                        <div className="primary-layout" >
                             {!topSongs ? (
                                 <div className="no-data-text">
                                     No listening data for today yet.
                                     Listening data refreshes every 15 minutes
                                 </div>
                             ) : (
-                                <div>
                                     <div class="main-text">
-                                        Your listening on this day
-                                    </div>
+                                        Your top listening on this day
+                                    <div class="gap"></div>
                                     
+                                    <div><TopStreamComponent
+                                    songName={topSongs[0][0]}
+                                    artistName={topSongs[0][1]}
+                                    albumArt={topSongs[0][2]}
+                                    topArtist={topArtist[0]}
+                                    artistArt={topArtist[1]}
+                                    ></TopStreamComponent></div>
 
                                 <div className="topsongs-container">
                                     <div className="song-column">
