@@ -4,10 +4,36 @@ const { uploadToFirebase, getImagesFromFirebase } = require('../services/firebas
 
 const router = express.Router();
 
+// for saving pictures locally
+router.post('/upload', upload.single('image'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+      }
+  
+      // Construct the URL
+      const url = `http://localhost:3000/uploads/${req.file.filename}`;
+      console.log(url)
+  
+      res.send({
+        success: 1,
+        file: {
+          url,
+        },
+      });
+    } catch (err) {
+      console.error('Error handling file upload:', err);
+      res.status(500).send('Internal Server Error.');
+    }
+  });
+
 // Route for saving uploaded images to Firebase
 router.post('/uploadToFirebase', upload.single('image'), async (req, res) => {
     const { userId, date, imageUrls } = req.body;
     if (!userId || !date || !imageUrls) {
+        console.log(userId)
+        console.log(date)
+        console.log(imageUrls)
         return res.status(400).send('Invalid request body.');
     }
 

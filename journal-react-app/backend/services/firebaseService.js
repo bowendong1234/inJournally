@@ -5,6 +5,7 @@ const { bucket } = require('../config/firebaseConfig');
 
 // Function to upload images to Firebase
 const uploadToFirebase = async (imageUrlsArray, userId, date) => {
+    console.log("uploading")
     const fileUploadPromises = imageUrlsArray.map(async (imageUrl) => {
         const parts = imageUrl.split('/');
         const filename = parts[parts.length - 1];
@@ -39,11 +40,13 @@ const getImagesFromFirebase = async (imageUrlsArray, userId, date) => {
         const localFilePath = path.join(__dirname, '../uploads', filename);
 
         if (!fs.existsSync(localFilePath)) {
+            console.log("downloading")
             const remoteFilePath = `Users/${userId}/${date}/Images/${filename}`;
             const image = bucket.file(remoteFilePath);
             const [exists] = await image.exists();
 
             if (exists) {
+                console.log("this should happen")
                 await image.download({ destination: localFilePath });
             }
         }
