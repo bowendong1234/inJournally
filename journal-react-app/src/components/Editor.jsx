@@ -132,13 +132,24 @@ const Editor = React.forwardRef((props, ref) => {
         }
       });
     } else {
+      const date_object = dayjs(date.date)
+      const day_number = date_object.format('D')
+      var day_number_place = 'th'
+      if (day_number == 1 || day_number == 21 || day_number == 31) {
+        day_number_place = 'st'
+      } else if (day_number == 2 || day_number == 22) {
+        day_number_place = 'nd'
+      } else if (day_number == 3 || day_number == 23) {
+        day_number_place = 'rd'
+      }
+      const formatted_date = date_object.format('dddd D') + day_number_place + " " + date_object.format('MMMM YYYY')
       journal_entry_data = {
         "blocks": [
           {
               "id": "doesnt matterrrr",
               "type": "header",
               "data": {
-                "text": `${date.date}`,
+                "text": formatted_date,
                 "level": 2
               }
           }]
