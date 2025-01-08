@@ -10,7 +10,7 @@ const TopStreamComponent = ({ songName, artistName, albumArt, topArtist, artistA
                 <h2 className="top-stream-song-name">{songName}</h2>
                 <p className="top-stream-artist-name">{artistName}</p>
             </div>
-            <img src={artistArt} alt={`${artistName} artist photo`} className="top-stream-album-art" />
+            <img src={artistArt} alt={`${artistName} artist photo`} className="top-artist-photo" />
             <div className="top-stream-song-info">
                 <h2 className="top-stream-song-name">{topArtist}</h2>
                 <p className="top-stream-artist-name">Most Streamed Artist Today</p>
