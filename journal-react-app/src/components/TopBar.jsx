@@ -26,6 +26,16 @@ const TopBar = ({handleSaveOnDateChange}) => {
       localStorage.setItem('selectedDate', formattedDate);
       navigate(`/editor/${formattedDate}`);
     };
+
+    const backOneDay = () => {
+      const dayBefore = date.subtract(1, 'day')
+      handleDateChange(dayBefore);
+    }
+
+    const forwardOneDay = () => {
+      const dayAfter = date.add(1, 'day')
+      handleDateChange(dayAfter)
+    }
   
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -34,7 +44,9 @@ const TopBar = ({handleSaveOnDateChange}) => {
                 <img src="/images/inJournally_logo.png" alt="Logo" className="logo"></img>
             </div>
             <div class="datepicker-container">
+                <button class="forward-back-date-change" onClick={backOneDay}><img src="/images/backward.svg" alt="one day before button" className="forward-back-date-icon" /></button>
                 <DatePicker value={date} format="LL" onChange={handleDateChange} slotProps={{ textField: { size: 'small' } }}/>
+                <button class="forward-back-date-change" onClick={forwardOneDay}><img src="/images/forward.svg" alt="one day after button" className="forward-back-date-icon" /></button>
             </div>
         </div>
       </LocalizationProvider>
