@@ -1,11 +1,13 @@
 const axios = require('axios');
-require('dotenv').config();
 const { collection, getDocs, query, where, doc, updateDoc, getDoc } = require('firebase-admin/firestore');
 const { db } = require('../config/firebaseConfig');
 const querystring = require('querystring');
 const dayjs = require('dayjs')
+const dotenv = require('dotenv');
 
 async function getAccessToken() {
+    const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+    dotenv.config({ path: envFile });
     const clientId = process.env.SPOTIFY_CLIENT_ID;
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -44,9 +46,8 @@ async function pollSpotifyStreams() {
             try {
                 const streams = await fetchSpotifyStreams(accessToken);
 
-                await saveStreamsToDatabase(user.uid, streams, accessToken); // Store in your database
+                await saveStreamsToDatabase(user.uid, streams, accessToken);
             } catch (err) {
-                // Handle token refresh logic or other errors
                 console.error("error when fetching streams", err)
             }
         }
@@ -76,7 +77,7 @@ async function getUsersFromFirebase() {
             });
         });
         console.log(users)
-        return users; // Return the array of user data
+        return users;
 
     } catch (error) {
         console.error("Error fetching users from Firebase: ", error);

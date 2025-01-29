@@ -14,6 +14,8 @@ import { db } from "../Firebase"
 import { useAuth } from '../contexts/AuthContext';
 import { doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const Editor = React.forwardRef((props, ref) => {
   const editorInstance = useRef(null);
   const editorContainerRef = useRef(null);
@@ -42,7 +44,7 @@ const Editor = React.forwardRef((props, ref) => {
           inlineToolbar: true,
           config: {
             endpoints: {
-              byFile: 'http://localhost:3000/api/upload',
+              byFile: `${API_BASE_URL}/api/upload`,
             }
           }
         },
@@ -100,7 +102,7 @@ const Editor = React.forwardRef((props, ref) => {
     formData.append('imageUrls', JSON.stringify(imageUrls))
 
     try {
-      const response = await fetch('http://localhost:3000/api/uploadToFirebase', {
+      const response = await fetch(`${API_BASE_URL}/api/uploadToFirebase`, {
         method: 'POST',
         body: formData,
       });
@@ -166,7 +168,7 @@ const Editor = React.forwardRef((props, ref) => {
       console.log(JSON.stringify(imageUrls))
       console.log(formData)
       try {
-        const response = await fetch('http://localhost:3000/api/getImagesFromFirebase', {
+        const response = await fetch(`${API_BASE_URL}/api/getImagesFromFirebase`, {  // EDIT URL
           method: 'POST',
           body: formData,
         });

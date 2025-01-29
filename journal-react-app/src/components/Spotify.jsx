@@ -9,6 +9,8 @@ import { Scrollbar } from 'smooth-scrollbar-react';
 import Song from './Song';
 import TopStreamComponent from './TopStream';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const Spotify = () => {
     const { currentUser } = useAuth();
     let date = useParams()
@@ -17,6 +19,7 @@ const Spotify = () => {
     const [topArtist, setTopArtist] = useState(null)
 
     useEffect(() => {
+        console.log(topSongs)
         const fetchAccessToken = async () => {
             const accessToken = await checkAccessToken();
             if (!accessToken) {
@@ -84,7 +87,7 @@ const Spotify = () => {
 
     const getAccessToken = async () => {
         try {
-            const response = await fetch('http://localhost:3000/spotify/getAccessToken')
+            const response = await fetch(`${API_BASE_URL}/spotify/getAccessToken`) // EDIT URL
             const data = await response.json();
             console.log(data.token)
         } catch (error) {
@@ -117,7 +120,7 @@ const Spotify = () => {
             })
         }
         try {
-            window.location.href = 'http://localhost:3000/spotify/authorise'; // Redirects to the backend route
+            window.location.href = `${API_BASE_URL}/spotify/authorise`; // Redirects to the backend route EDIT URL
         } catch (error) {
             console.error('Error when authorising user', error);
         }
@@ -137,7 +140,7 @@ const Spotify = () => {
                 <Scrollbar style={{ height: '100%', width: '100%' }}>
                     <div className="inner-spotify-container">
                         <div className="primary-layout" >
-                            {!topSongs ? (
+                            {topSongs == null || topSongs.length == 0 ? (
                                 <div className="no-data-text">
                                     No listening data for today yet.
                                     Listening data refreshes every 15 minutes
@@ -147,13 +150,13 @@ const Spotify = () => {
                                         Your top listening on this day
                                     <div class="gap"></div>
                                     
-                                    <div><TopStreamComponent
+                                    <TopStreamComponent
                                     songName={topSongs[0][0]}
                                     artistName={topSongs[0][1]}
                                     albumArt={topSongs[0][2]}
                                     topArtist={topArtist[0]}
                                     artistArt={topArtist[1]}
-                                    ></TopStreamComponent></div>
+                                    ></TopStreamComponent>
 
                                 <div className="topsongs-container">
                                     <div className="song-column">

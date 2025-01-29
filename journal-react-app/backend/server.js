@@ -6,9 +6,15 @@ const spotifyRoutes = require('./routes/spotify');
 const { pollSpotifyStreams } = require('./services/spotifyService');
 
 const app = express();
-const port = 3000;
 
-require('dotenv').config();
+const dotenv = require('dotenv');
+const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+dotenv.config({ path: envFile });
+const port = process.env.PORT || 5000;
+
+console.log(`Loaded environment: ${envFile}`); // Debugggggg
+console.log("API URL:", process.env.API_URL);
+const API_BASE_URL = process.env.API_URL
 
 // Enable CORS and JSON parsing
 app.use(cors());
@@ -35,7 +41,7 @@ setInterval(async () => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running at ${process.env.API_URL || `http://localhost:${PORT}`}`);
 });
 // const express = require('express');
 // const multer = require('multer');

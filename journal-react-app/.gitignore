@@ -32,3 +32,5 @@ serviceAccountKey.json
 backend/.env
 .env
 backend/firebase.js
+.env.development
+.env.production

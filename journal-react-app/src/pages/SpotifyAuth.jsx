@@ -5,6 +5,8 @@ import { db } from "../Firebase"
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const SpotifyAuth = () => {
     const navigate = useNavigate();
     const today = dayjs().format('YYYY-MM-DD')
@@ -48,7 +50,7 @@ const SpotifyAuth = () => {
 
         if (code) {
             // Call the backend with the authorization code
-            fetch(`http://localhost:3000/spotify/callback?code=${code}`)
+            fetch(`${API_BASE_URL}/spotify/callback?code=${code}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log("frontend")

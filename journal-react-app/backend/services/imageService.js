@@ -7,8 +7,9 @@ const fs = require('fs');
 const mime = require('mime-types');
 
 const app = express();
-const port = 3000;
+const port = 5173;
 require('dotenv').config();
+const API_BASE_URL = process.env.VITE_API_URL;
 
 // Firebase Admin initialization
 const serviceAccount = require('../serviceAccountKey.json'); 
@@ -22,7 +23,7 @@ const bucket = admin.storage().bucket();
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on ${API_BASE_URL}:${port}`);
 });
 
 // Enable CORS
@@ -146,7 +147,8 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     }
 
     // Construct the URL
-    const url = `http://localhost:3000/uploads/${req.file.filename}`;
+    console.log("HERE")
+    const url = `${API_BASE_URL}/uploads/${req.file.filename}`;
     console.log(url)
 
     res.send({

@@ -1,10 +1,13 @@
-require('dotenv').config();
 const express = require('express');
 const { getAccessToken } = require('../services/spotifyService'); 
 const querystring = require('querystring');
 const router = express.Router();
 const axios = require('axios');
 
+const dotenv = require('dotenv');
+const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+dotenv.config({ path: envFile });
+const API_BASE_URL = process.env.API_URL
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -21,7 +24,7 @@ router.get('/authorise', (req, res) => {
             response_type: 'code',
             client_id: process.env.SPOTIFY_CLIENT_ID,
             scope: scope,
-            redirect_uri: "http://localhost:5173/spotify/callback", // PLS REMEMENGER TO CHANGE THIS WHEN U DEPLOY
+            redirect_uri: `${API_BASE_URL}/spotify/callback`, // PLS REMEMENGER TO CHANGE THIS WHEN U DEPLOY
             state: state,
             show_dialog: true
         }));
@@ -51,7 +54,7 @@ router.get('/callback', async (req, res) => {
 
         const response = await axios.post('https://accounts.spotify.com/api/token', querystring.stringify({
             code: code,
-            redirect_uri: "http://localhost:5173/spotify/callback",
+            redirect_uri: `${API_BASE_URL}/spotify/callback`, // PLS REMEMENGER TO CHANGE THIS WHEN U DEPLOY
             grant_type: 'authorization_code',
         }), {
             headers: {

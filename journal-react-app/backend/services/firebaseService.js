@@ -32,7 +32,6 @@ const uploadToFirebase = async (imageUrlsArray, userId, date) => {
 
 // Function to retrieve images from Firebase
 const getImagesFromFirebase = async (imageUrlsArray, userId, date) => {
-    console.log("HEREEEE")
     console.log(imageUrlsArray)
     const fileURetrievalPromises = imageUrlsArray.map(async (imageUrl) => {
         const parts = imageUrl.split('/');

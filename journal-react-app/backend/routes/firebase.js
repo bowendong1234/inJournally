@@ -4,6 +4,11 @@ const { uploadToFirebase, getImagesFromFirebase } = require('../services/firebas
 
 const router = express.Router();
 
+const dotenv = require('dotenv');
+const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+dotenv.config({ path: envFile });
+const API_BASE_URL = process.env.API_URL
+
 // for saving pictures locally
 router.post('/upload', upload.single('image'), (req, res) => {
     try {
@@ -12,7 +17,7 @@ router.post('/upload', upload.single('image'), (req, res) => {
       }
   
       // Construct the URL
-      const url = `http://localhost:3000/uploads/${req.file.filename}`;
+      const url = `${API_BASE_URL}/uploads/${req.file.filename}`;
       console.log(url)
   
       res.send({
@@ -29,6 +34,7 @@ router.post('/upload', upload.single('image'), (req, res) => {
 
 // Route for saving uploaded images to Firebase
 router.post('/uploadToFirebase', upload.single('image'), async (req, res) => {
+    console.log("HERRRREEEE")
     const { userId, date, imageUrls } = req.body;
     if (!userId || !date || !imageUrls) {
         console.log(userId)

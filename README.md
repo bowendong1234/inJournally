@@ -8,5 +8,4 @@ This is a full stack implementation of an online journalling tool using React an
 
 ### Currently working on:
 1. Deployment
-2. Adding a moodtracker
-3. Client-side encryption to ensure user privacy
+2. Client-side encryption to ensure user privacy
