@@ -7,7 +7,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
 dotenv.config({ path: envFile });
-const API_BASE_URL = process.env.API_URL
+const FRONTEND_URL = process.env.FRONTEND_URL
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -19,13 +19,13 @@ router.get('/getAccessToken', async (req, res) => {
 router.get('/authorise', (req, res) => {
     var state = generateRandomString(16);
     var scope = "user-top-read user-read-recently-played"
-    console.log(API_BASE_URL)
+    console.log(FRONTEND_URL)
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
             client_id: process.env.SPOTIFY_CLIENT_ID,
             scope: scope,
-            redirect_uri: `${API_BASE_URL}/spotify/callback`, // TODO: this should be frontend url
+            redirect_uri: `${FRONTEND_URL}/spotify/callback`, // TODO: this should be frontend url
             state: state,
             show_dialog: true
         }));
@@ -55,7 +55,7 @@ router.get('/callback', async (req, res) => {
 
         const response = await axios.post('https://accounts.spotify.com/api/token', querystring.stringify({
             code: code,
-            redirect_uri: `${API_BASE_URL}/spotify/callback`, // TODO: this should be frontend url
+            redirect_uri: `${FRONTEND_URL}/spotify/callback`, // TODO: this should be frontend url
             grant_type: 'authorization_code',
         }), {
             headers: {

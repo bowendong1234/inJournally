@@ -137,10 +137,8 @@ async function getNewToken(spotifyRefreshToken, userID) {
         var actual_refresh_token = null
         if (refresh_token) { // spotify doesn't always return a new refresh token for some reason??? actual refresh token might be old access token documentation not clear
             actual_refresh_token = refresh_token
-            console.log("NEWWWWWWWWWWWWWWWWWWWWWWW")
         } else {
             actual_refresh_token = spotifyRefreshToken
-            console.log("OLDDDDDDDDDD")
         }
         const token_expiry = Date.now() + (expires_in - 10) * 1000;
         try {

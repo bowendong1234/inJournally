@@ -13,8 +13,6 @@ dotenv.config({ path: envFile });
 const port = process.env.PORT || 5000;
 
 console.log(`Loaded environment: ${envFile}`); // Debugggggg
-console.log("API URL:", process.env.API_URL);
-const API_BASE_URL = process.env.API_URL
 
 // Enable CORS and JSON parsing
 app.use(cors());
@@ -30,7 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // for spotify routes
 app.use('/spotify', spotifyRoutes);
 
-const POLL_INTERVAL = 15 * 60 * 1000; 
+const POLL_INTERVAL = 0.5 * 60 * 1000; 
 setInterval(async () => {
   try {
       await pollSpotifyStreams();
