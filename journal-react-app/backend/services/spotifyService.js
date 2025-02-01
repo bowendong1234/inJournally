@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { collection, getDocs, query, where, doc, updateDoc, getDoc } = require('firebase-admin/firestore');
-const { db } = require('../config/firebaseConfig');
+const { db, serviceAccount } = require('../config/firebaseConfig');
 const querystring = require('querystring');
 const dayjs = require('dayjs')
 const dotenv = require('dotenv');
@@ -32,6 +32,7 @@ async function getAccessToken() {
 }
 
 async function pollSpotifyStreams() {
+    console.log(serviceAccount)
     const users = await getUsersFromFirebase();
 
     for (const user of users) {
