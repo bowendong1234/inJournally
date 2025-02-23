@@ -12,14 +12,14 @@ const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".en
 dotenv.config({ path: envFile });
 const port = process.env.PORT || 5000;
 
-console.log(`Loaded environment: ${envFile}`); // Debugggggg
+console.log(`Loaded environment: ${envFile}`);
 
 // Enable CORS and JSON parsing
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));  // For parsing form data
 
-// Use Firebase routes
+// For Firebase routes
 app.use('/api', firebaseRoutes);
 
 // Serve uploaded files statically
@@ -28,7 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // for spotify routes
 app.use('/spotify', spotifyRoutes);
 
-const POLL_INTERVAL = 0.5 * 60 * 1000; 
+const POLL_INTERVAL = 15 * 60 * 1000; 
 setInterval(async () => {
   try {
       await pollSpotifyStreams();

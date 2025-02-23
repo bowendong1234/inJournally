@@ -3,7 +3,36 @@ const mime = require('mime-types');
 const fs = require('fs');
 const { bucket } = require('../config/firebaseConfig');
 
-// Function to upload images to Firebase
+const uploadImage = async (remoteFilePath) => {
+    try {
+        const contentType = mime.lookup(localFilePath) || 'application/octet-stream';
+        await bucket.upload(localFilePath, {
+            destination: remoteFilePath,
+            metadata: { contentType },
+        });
+
+        const fileUrl = `https://storage.googleapis.com/${bucket.name}/${remoteFilePath}`;
+        return { success: 1, file: { url: fileUrl } };
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        throw new Error('Internal Server Error.');
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to upload images to Firebase (OLD)
 const uploadToFirebase = async (imageUrlsArray, userId, date) => {
     const fileUploadPromises = imageUrlsArray.map(async (imageUrl) => {
         const parts = imageUrl.split('/');
