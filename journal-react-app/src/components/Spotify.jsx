@@ -26,7 +26,6 @@ const Spotify = () => {
                 console.log("No token user has not logged in");
             } else {
                 setShowLogin(false)
-                console.log("Access Token:", accessToken);
                 fetchStreamingData()
             }
         };
@@ -98,7 +97,6 @@ const Spotify = () => {
     const checkAccessToken = async () => {
         let accessToken = null
         const uid = localStorage.getItem("userID")
-        console.log("checkaccess token", uid)
         const docRef = doc(db, `Users/${uid}`)
         const userDoc = await getDoc(docRef)
         if (userDoc.exists()) {

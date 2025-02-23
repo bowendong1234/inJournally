@@ -7,11 +7,9 @@ import dayjs from 'dayjs';
 import Spotify from '../components/Spotify.jsx'
 
 const EditorPage = () => {
-    console.log("editor page rendered")
     const navigate = useNavigate();
     const editorRef = useRef()
     const { date } = useParams();
-    console.log(date)
 
     useEffect(() => {
         console.log("use effect triggered")
