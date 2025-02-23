@@ -32,7 +32,6 @@ async function getAccessToken() {
 }
 
 async function pollSpotifyStreams() {
-    console.log(serviceAccount)
     const users = await getUsersFromFirebase();
 
     for (const user of users) {
