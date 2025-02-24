@@ -19,7 +19,6 @@ const Spotify = () => {
     const [topArtist, setTopArtist] = useState(null)
 
     useEffect(() => {
-        console.log(topSongs)
         const fetchAccessToken = async () => {
             const accessToken = await checkAccessToken();
             if (!accessToken) {
@@ -31,22 +30,22 @@ const Spotify = () => {
         };
 
         fetchAccessToken();
-
-        const fetchStreamingData = async () => {
-            const userId = currentUser.uid;
-            if (!date || date == "redirect") {
-                date = dayjs().format('YYYY-MM-DD');
-            }
-            const ref = collection(db, "Users", userId, "UserStreaming", date.date, "Streams")
-            const querySnap = await getDocs(ref)
-            let allStreams = []
-            querySnap.forEach((docSnap) => {
-                const streamData = docSnap.data()
-                allStreams.push([streamData.song, streamData.artist, streamData.song_image_url, streamData.artist_id, streamData.artist_image_url])
-            })
-            calculateTop(allStreams)
-        };
     }, [date]);
+
+    const fetchStreamingData = async () => {
+        const userId = currentUser.uid;
+        if (!date || date == "redirect") {
+            date = dayjs().format('YYYY-MM-DD');
+        }
+        const ref = collection(db, "Users", userId, "UserStreaming", date.date, "Streams")
+        const querySnap = await getDocs(ref)
+        let allStreams = []
+        querySnap.forEach((docSnap) => {
+            const streamData = docSnap.data()
+            allStreams.push([streamData.song, streamData.artist, streamData.song_image_url, streamData.artist_id, streamData.artist_image_url])
+        })
+        calculateTop(allStreams)
+    };
 
     const calculateTop = (allStreams) => {
         const songFrequencyMap = {};
@@ -123,6 +122,29 @@ const Spotify = () => {
         }
     };
 
+    const refreshStreamingData = async () => {
+        const userId = localStorage.getItem("userID")
+        try {
+            const response = await fetch(`${API_BASE_URL}/spotify/refreshUserStreams`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 'userId': userId})
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Streams refreshed successfully.');
+                fetchStreamingData()
+            } else {
+                console.error('Stream refresh failed :(');
+            }
+        } catch (error) {
+            console.error("Error refreshing streams: ", error)
+        }
+
+    }
+
     return (
         <div class="outer-spotify-container">
             {showLogin ? (
@@ -136,6 +158,7 @@ const Spotify = () => {
             ) : (
                 <Scrollbar style={{ height: '100%', width: '100%' }}>
                     <div className="inner-spotify-container">
+                        <button onClick={refreshStreamingData} class="refresh-button">Refresh</button>
                         <div className="primary-layout" >
                             {topSongs == null || topSongs.length == 0 ? (
                                 <div className="no-data-text">

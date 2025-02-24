@@ -98,7 +98,11 @@ async function saveStreamsToDatabase(uid, streams, accessToken) {
         if (playDate == today) {
             const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
             const docPath = `Users/${uid}/UserStreaming/${today}/Streams/${playedAt}`;
-            await db.doc(docPath).set(streamDetails, { merge: true })
+            try {
+                await db.doc(docPath).set(streamDetails, { merge: true })
+            } catch (error) {
+                console.error("Error saving stream to Firebase: ", error)
+            }
         }
     }
 }
@@ -158,4 +162,31 @@ async function getNewToken(spotifyRefreshToken, userID) {
     }
 }
 
-module.exports = { getAccessToken, pollSpotifyStreams};
+// function that refreshes streams of a specific user
+async function refreshUserStreams(userID) {
+    try {
+        const doc = await db.collection('Users').doc(userID).get();
+        const userData = doc.data();
+        var spotifyAccessToken = userData.spotifyAccessToken
+        const spotifyRefreshToken = userData.spotifyRefreshToken
+        const tokenExpiresAt = userData.tokenExpiresAt
+        if (spotifyAccessToken) {
+            if (tokenExpiresAt < Date.now()) {
+                spotifyAccessToken = await getNewToken(spotifyRefreshToken, userID)
+            }
+            try {
+                const streams = await fetchSpotifyStreams(spotifyAccessToken);
+                await saveStreamsToDatabase(userID, streams, spotifyAccessToken);
+                return {success: 1}
+            } catch (err) {
+                console.error("error when fetching streams", err)
+            }
+        } 
+    } catch (error) {
+        console.error("Error user Spotify access token from Firebase: ", error);
+    }
+
+
+}
+
+module.exports = { getAccessToken, pollSpotifyStreams, refreshUserStreams};

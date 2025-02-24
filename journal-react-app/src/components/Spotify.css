@@ -96,3 +96,16 @@
 .gap{
     height: 20px;
 }
+
+.refresh-button {
+    width: 80px;
+    height: 30px;
+    margin-left: 14px;
+    background-color: #faa340;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 2%;
+  }

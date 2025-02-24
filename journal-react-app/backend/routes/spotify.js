@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAccessToken } = require('../services/spotifyService'); 
+const { getAccessToken, refreshUserStreams } = require('../services/spotifyService'); 
 const querystring = require('querystring');
 const router = express.Router();
 const axios = require('axios');
@@ -88,5 +88,18 @@ router.get('/callback', async (req, res) => {
     }
 });
 
-// http://localhost:5173/spotify/callback?code=AQALFgpEI4faYep8UCbqCMsSIAdZa21ELBpTVqie1mf8zeELxl-1Ot_bRHMsUmo4gLSgkQ6qSN_UVahs-mIFHpYVxMq7lj1l1ZE5chfumeNaxJ1iNXxHnw8EelCYwPeJps5YV_tSjPdWqRdzmsB7RFPjdqCgCz9a7unzSAJ2GOSRlUXL8F9FzhjQ1nMs6JIBth08cFHZpkBnlXHqFcpetExBuORtAq8Lcq5x1IvYj-TehbaG&state=URax2gJeJ4lTWyJb
+// Route for updating streaming data of one specific user
+router.post('/refreshUserStreams', async (req, res) => {
+    const { userId } = req.body;
+    if (!userId) {
+        return res.status(400).send('Invalid request body.');
+    }
+    try {
+        const results = await refreshUserStreams(userId)
+        res.send(results);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
 module.exports = router;  
