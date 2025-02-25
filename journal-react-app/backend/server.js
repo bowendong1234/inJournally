@@ -28,18 +28,29 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // for spotify routes
 app.use('/spotify', spotifyRoutes);
 
-const POLL_INTERVAL = 15 * 60 * 1000; 
-setInterval(async () => {
-  try {
-      await pollSpotifyStreams();
-  } catch (error) {
-      console.error('Error while polling Spotify streams:', error);
-  }
-}, POLL_INTERVAL);
+// const POLL_INTERVAL = 15 * 60 * 1000; 
+// setInterval(async () => {
+//   try {
+//       await pollSpotifyStreams();
+//   } catch (error) {
+//       console.error('Error while polling Spotify streams:', error);
+//   }
+// }, POLL_INTERVAL);
+
+// for polling streaming data for all users
+app.get("/pollAllUserStreaming", async (req, res) => {
+    try {
+        await pollSpotifyStreams();
+		console.log("CRON POLLING")
+		res.json({ message: "Manual CRON polling works yay" });
+    } catch (error) {
+        console.error("Error polling spotify streams: ", error)
+    }
+})
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running at ${process.env.API_URL || `http://localhost:${PORT}`}`);
+    console.log(`Server running at ${process.env.API_URL || `http://localhost:${PORT}`}`);
 });
 // const express = require('express');
 // const multer = require('multer');
