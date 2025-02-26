@@ -90,12 +90,12 @@ router.get('/callback', async (req, res) => {
 
 // Route for updating streaming data of one specific user
 router.post('/refreshUserStreams', async (req, res) => {
-    const { userId } = req.body;
+    const { userId, timeZone } = req.body;
     if (!userId) {
         return res.status(400).send('Invalid request body.');
     }
     try {
-        const results = await refreshUserStreams(userId)
+        const results = await refreshUserStreams(userId, timeZone)
         res.send(results);
     } catch (error) {
         res.status(500).send(error.message);

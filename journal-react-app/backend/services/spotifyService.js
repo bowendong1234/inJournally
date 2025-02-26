@@ -4,6 +4,10 @@ const { db, serviceAccount } = require('../config/firebaseConfig');
 const querystring = require('querystring');
 const dayjs = require('dayjs')
 const dotenv = require('dotenv');
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 async function getAccessToken() {
     const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
@@ -23,7 +27,6 @@ async function getAccessToken() {
                 },
             }
         );
-        console.log(response.data.access_token)
         return response.data.access_token;
     } catch (error) {
         console.error('Error fetching access token:', error.response ? error.response.data : error.message);
@@ -38,6 +41,7 @@ async function pollSpotifyStreams() {
         var accessToken = user.spotifyAccessToken;
         const tokenExpiresAt = user.tokenExpiresAt;
         const spotifyRefreshToken = user.spotifyRefreshToken
+        const timeZone = user.userTimeZone
 
         if (accessToken) {
             if (tokenExpiresAt < Date.now()) {
@@ -46,7 +50,7 @@ async function pollSpotifyStreams() {
             try {
                 const streams = await fetchSpotifyStreams(accessToken);
 
-                await saveStreamsToDatabase(user.uid, streams, accessToken);
+                await saveStreamsToDatabase(user.uid, streams, accessToken, timeZone);
             } catch (err) {
                 console.error("error when fetching streams", err)
             }
@@ -74,9 +78,9 @@ async function getUsersFromFirebase() {
                 spotifyAccessToken: userData.spotifyAccessToken,
                 spotifyRefreshToken: userData.spotifyRefreshToken,
                 tokenExpiresAt: userData.tokenExpiresAt,
+                userTimeZone: userData.userTimeZone
             });
         });
-        console.log(users)
         return users;
 
     } catch (error) {
@@ -85,25 +89,38 @@ async function getUsersFromFirebase() {
     }
 }
 
-async function saveStreamsToDatabase(uid, streams, accessToken) {
-    const today = dayjs().format('YYYY-MM-DD');
+async function saveStreamsToDatabase(uid, streams, accessToken, timeZone) {
+    const today = dayjs().tz(timeZone).format("YYYY-MM-DD")
     for (const stream of streams) {
         const artistName = stream.track.artists[0].name; 
         const artistId = stream.track.artists[0].id
         const songName = stream.track.name;
         const songImageUrl = stream.track.album.images[0].url;
         const artistImageUrl = await getArtistImageUrl(artistId, accessToken)
-        const playedAt = stream.played_at;
-        const playDate = dayjs(playedAt).format('YYYY-MM-DD');
-        if (playDate == today) {
-            const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
-            const docPath = `Users/${uid}/UserStreaming/${today}/Streams/${playedAt}`;
-            try {
-                await db.doc(docPath).set(streamDetails, { merge: true })
-            } catch (error) {
-                console.error("Error saving stream to Firebase: ", error)
-            }
+        const playedAt = dayjs(stream.played_at).tz(timeZone)
+        const playDate = playedAt.format("YYYY-MM-DD");
+
+        // console.log(songName)
+        // console.log(stream.played_at)
+        // console.log(playDate)
+        // console.log(playedAt.format("YYYY-MM-DD HH:mm:ss Z"))
+
+        const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
+        const docPath = `Users/${uid}/UserStreaming/${playDate}/Streams/${playedAt.format("YYYY-MM-DD HH:mm:ss Z")}`;
+        try {
+            await db.doc(docPath).set(streamDetails, { merge: true })
+        } catch (error) {
+            console.error("Error saving stream to Firebase: ", error)
         }
+        // if (playDate == today) {
+        //     const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
+        //     const docPath = `Users/${uid}/UserStreaming/${today}/Streams/${playedAt}`;
+        //     try {
+        //         await db.doc(docPath).set(streamDetails, { merge: true })
+        //     } catch (error) {
+        //         console.error("Error saving stream to Firebase: ", error)
+        //     }
+        // }
     }
 }
 
@@ -117,7 +134,6 @@ async function getArtistImageUrl(artistId, accessToken) {
 }
 
 async function getNewToken(spotifyRefreshToken, userID) {
-    console.log("Getting new TOken")
     const clientId = process.env.SPOTIFY_CLIENT_ID;
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
     try {
@@ -135,9 +151,6 @@ async function getNewToken(spotifyRefreshToken, userID) {
         });
 
         const { access_token, refresh_token, expires_in } = response.data;
-        console.log(response.data)
-        console.log("new access token", access_token)
-        console.log("new refresh token", refresh_token)
         var actual_refresh_token = null
         if (refresh_token) { // spotify doesn't always return a new refresh token for some reason??? actual refresh token might be old access token documentation not clear
             actual_refresh_token = refresh_token
@@ -163,7 +176,7 @@ async function getNewToken(spotifyRefreshToken, userID) {
 }
 
 // function that refreshes streams of a specific user
-async function refreshUserStreams(userID) {
+async function refreshUserStreams(userID, timeZone) {
     try {
         const doc = await db.collection('Users').doc(userID).get();
         const userData = doc.data();
@@ -176,7 +189,7 @@ async function refreshUserStreams(userID) {
             }
             try {
                 const streams = await fetchSpotifyStreams(spotifyAccessToken);
-                await saveStreamsToDatabase(userID, streams, spotifyAccessToken);
+                await saveStreamsToDatabase(userID, streams, spotifyAccessToken, timeZone);
                 return {success: 1}
             } catch (err) {
                 console.error("error when fetching streams", err)

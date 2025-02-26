@@ -138,13 +138,14 @@ const Spotify = () => {
 
     const refreshStreamingData = async () => {
         const userId = localStorage.getItem("userID")
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         try {
             const response = await fetch(`${API_BASE_URL}/spotify/refreshUserStreams`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 'userId': userId })
+                body: JSON.stringify({ 'userId': userId, 'timeZone': userTimeZone })
             });
             const result = await response.json();
             if (result.success) {

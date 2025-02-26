@@ -27,14 +27,14 @@ const SpotifyAuth = () => {
             const userRef = doc(db, docPath);
 
             const expiration_time = Date.now() + (expires_in - 10) * 1000;
+            const user_time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
             await updateDoc(userRef, {
                 spotifyAccessToken: access_token,
                 spotifyRefreshToken: refresh_token,
                 tokenExpiresAt: expiration_time,
+                userTimeZone: user_time_zone
             });
-
-            console.log("Tokens successfully saved to Firebase");
 
             // Navigate after saving to Firestore
             navigate(`/editor/${today}`);
@@ -53,8 +53,6 @@ const SpotifyAuth = () => {
             fetch(`${API_BASE_URL}/spotify/callback?code=${code}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("frontend")
-                    console.log("Tokens:", data);
                     saveSpotifyTokens(data)
                 })
                 .catch(err => console.error("Error fetching access token:", err));
