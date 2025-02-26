@@ -17,6 +17,7 @@ const Spotify = () => {
     const [showLogin, setShowLogin] = useState(true);
     const [topSongs, setTopSongs] = useState(null)
     const [topArtist, setTopArtist] = useState(null)
+    const [streamingDataMsg, setStreamingDataMsg] = useState("");
 
     useEffect(() => {
         const fetchAccessToken = async () => {
@@ -32,6 +33,18 @@ const Spotify = () => {
         fetchAccessToken();
     }, [date]);
 
+    useEffect(() => {
+        const today = dayjs()
+        const entryDate = dayjs(date.date)
+        if (entryDate.isBefore(today, 'date')) {
+            setStreamingDataMsg("No recorded listening data on this day");
+        } else if (entryDate.isSame(today, 'date')) {
+            setStreamingDataMsg("No listening data for today yet. Listening data refreshes every 5 minutes")
+        } else {
+            setStreamingDataMsg("Future date has no recorded listening data")
+        }
+      }, [date]);
+
     const fetchStreamingData = async () => {
         const userId = currentUser.uid;
         if (!date || date == "redirect") {
@@ -45,6 +58,7 @@ const Spotify = () => {
             allStreams.push([streamData.song, streamData.artist, streamData.song_image_url, streamData.artist_id, streamData.artist_image_url])
         })
         calculateTop(allStreams)
+
     };
 
     const calculateTop = (allStreams) => {
@@ -76,8 +90,8 @@ const Spotify = () => {
             .map(({ artist, artist_image_url }) => [artist, artist_image_url])[0]
 
         // Output sorted songs and most frequent artist
-        console.log("Sorted Songs by Frequency:", sortedSongs);
-        console.log("Most Frequent Artist:", mostFrequentArtist);
+        // console.log("Sorted Songs by Frequency:", sortedSongs);
+        // console.log("Most Frequent Artist:", mostFrequentArtist);
         setTopSongs(sortedSongs)
         setTopArtist(mostFrequentArtist)
     };
@@ -130,7 +144,7 @@ const Spotify = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 'userId': userId})
+                body: JSON.stringify({ 'userId': userId })
             });
             const result = await response.json();
             if (result.success) {
@@ -161,48 +175,47 @@ const Spotify = () => {
                         <button onClick={refreshStreamingData} class="refresh-button">Refresh</button>
                         <div className="primary-layout" >
                             {topSongs == null || topSongs.length == 0 ? (
-                                <div className="no-data-text">
-                                    No listening data for today yet.
-                                    Listening data refreshes every 15 minutes
+                                <div className="no-data-text" >
+                                    {streamingDataMsg}
                                 </div>
                             ) : (
-                                    <div class="main-text">
-                                        Your top listening on this day
+                                <div class="main-text">
+                                    Your top listening on this day
                                     <div class="gap"></div>
-                                    
+
                                     <TopStreamComponent
-                                    songName={topSongs[0][0]}
-                                    artistName={topSongs[0][1]}
-                                    albumArt={topSongs[0][2]}
-                                    topArtist={topArtist[0]}
-                                    artistArt={topArtist[1]}
+                                        songName={topSongs[0][0]}
+                                        artistName={topSongs[0][1]}
+                                        albumArt={topSongs[0][2]}
+                                        topArtist={topArtist[0]}
+                                        artistArt={topArtist[1]}
                                     ></TopStreamComponent>
 
-                                <div className="topsongs-container">
-                                    <div className="song-column">
-                                        {topSongs.slice(1, 6).map((stream, index) => (
-                                            <Song
-                                                key={index}
-                                                songName={stream[0]}
-                                                artistName={stream[1]}
-                                                albumArt={stream[2]}
-                                                number={index + 2}
-                                            />
-                                        ))}
-                                    </div>
-                                    <div className="song-column">
-                                        {topSongs.slice(6, 11).map((stream, index) => (
-                                            <Song
-                                                key={index}
-                                                songName={stream[0]}
-                                                artistName={stream[1]}
-                                                albumArt={stream[2]}
-                                                number={index + 7}
-                                            />
-                                        ))}
+                                    <div className="topsongs-container">
+                                        <div className="song-column">
+                                            {topSongs.slice(1, 6).map((stream, index) => (
+                                                <Song
+                                                    key={index}
+                                                    songName={stream[0]}
+                                                    artistName={stream[1]}
+                                                    albumArt={stream[2]}
+                                                    number={index + 2}
+                                                />
+                                            ))}
+                                        </div>
+                                        <div className="song-column">
+                                            {topSongs.slice(6, 11).map((stream, index) => (
+                                                <Song
+                                                    key={index}
+                                                    songName={stream[0]}
+                                                    artistName={stream[1]}
+                                                    albumArt={stream[2]}
+                                                    number={index + 7}
+                                                />
+                                            ))}
 
+                                        </div>
                                     </div>
-                                </div>
                                 </div>
                             )}
                         </div>
