@@ -21,8 +21,6 @@ const GoogleSignInButton = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         // Successfully signed in
-        console.log(result.user);
-        console.log(result.user.uid);
         setCurrentUser(result.user);
         localStorage.setItem('userID', result.user.uid);
         localStorage.setItem('selectedDate', today);
@@ -74,9 +72,6 @@ const Login = ( { onSignUpClick, onForgotPasswordClick}) => {
 
   return (
     <div class="login-container">
-      {/* <div class="text-container">
-        <img src="/images/inJournally_logo.png" alt="inJournally Logo" className="google-logo" />
-      </div> */}
       <div class="sign-in-heading">
         Login
       </div>

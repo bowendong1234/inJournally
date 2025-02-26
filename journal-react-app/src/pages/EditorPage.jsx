@@ -12,7 +12,6 @@ const EditorPage = () => {
     const { date } = useParams();
 
     useEffect(() => {
-        console.log("use effect triggered")
         if (!date || date=="redirect") {
           const today = dayjs().format('YYYY-MM-DD');
           console.log("here")
