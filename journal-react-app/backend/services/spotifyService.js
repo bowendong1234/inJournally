@@ -36,8 +36,7 @@ async function getAccessToken() {
 
 async function pollSpotifyStreams() {
     const users = await getUsersFromFirebase();
-
-    for (const user of users) {
+    await Promise.all(users.map(async (user) => {
         var accessToken = user.spotifyAccessToken;
         const tokenExpiresAt = user.tokenExpiresAt;
         const spotifyRefreshToken = user.spotifyRefreshToken
@@ -55,7 +54,26 @@ async function pollSpotifyStreams() {
                 console.error("error when fetching streams", err)
             }
         }
-    }
+    }))
+    // for (const user of users) {
+    //     var accessToken = user.spotifyAccessToken;
+    //     const tokenExpiresAt = user.tokenExpiresAt;
+    //     const spotifyRefreshToken = user.spotifyRefreshToken
+    //     const timeZone = user.userTimeZone
+
+    //     if (accessToken) {
+    //         if (tokenExpiresAt < Date.now()) {
+    //             accessToken = await getNewToken(spotifyRefreshToken, user.uid)
+    //         }
+    //         try {
+    //             const streams = await fetchSpotifyStreams(accessToken);
+
+    //             await saveStreamsToDatabase(user.uid, streams, accessToken, timeZone);
+    //         } catch (err) {
+    //             console.error("error when fetching streams", err)
+    //         }
+    //     }
+    // }
 }
 
 async function fetchSpotifyStreams(accessToken) {
@@ -90,8 +108,7 @@ async function getUsersFromFirebase() {
 }
 
 async function saveStreamsToDatabase(uid, streams, accessToken, timeZone) {
-    const today = dayjs().tz(timeZone).format("YYYY-MM-DD")
-    for (const stream of streams) {
+    await Promise.all(streams.map(async (stream) => {
         const artistName = stream.track.artists[0].name; 
         const artistId = stream.track.artists[0].id
         const songName = stream.track.name;
@@ -100,11 +117,6 @@ async function saveStreamsToDatabase(uid, streams, accessToken, timeZone) {
         const playedAt = dayjs(stream.played_at).tz(timeZone)
         const playDate = playedAt.format("YYYY-MM-DD");
 
-        // console.log(songName)
-        // console.log(stream.played_at)
-        // console.log(playDate)
-        // console.log(playedAt.format("YYYY-MM-DD HH:mm:ss Z"))
-
         const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
         const docPath = `Users/${uid}/UserStreaming/${playDate}/Streams/${playedAt.format("YYYY-MM-DD HH:mm:ss Z")}`;
         try {
@@ -112,16 +124,24 @@ async function saveStreamsToDatabase(uid, streams, accessToken, timeZone) {
         } catch (error) {
             console.error("Error saving stream to Firebase: ", error)
         }
-        // if (playDate == today) {
-        //     const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
-        //     const docPath = `Users/${uid}/UserStreaming/${today}/Streams/${playedAt}`;
-        //     try {
-        //         await db.doc(docPath).set(streamDetails, { merge: true })
-        //     } catch (error) {
-        //         console.error("Error saving stream to Firebase: ", error)
-        //     }
-        // }
-    }
+    }))
+    // for (const stream of streams) {
+    //     const artistName = stream.track.artists[0].name; 
+    //     const artistId = stream.track.artists[0].id
+    //     const songName = stream.track.name;
+    //     const songImageUrl = stream.track.album.images[0].url;
+    //     const artistImageUrl = await getArtistImageUrl(artistId, accessToken)
+    //     const playedAt = dayjs(stream.played_at).tz(timeZone)
+    //     const playDate = playedAt.format("YYYY-MM-DD");
+
+    //     const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
+    //     const docPath = `Users/${uid}/UserStreaming/${playDate}/Streams/${playedAt.format("YYYY-MM-DD HH:mm:ss Z")}`;
+    //     try {
+    //         await db.doc(docPath).set(streamDetails, { merge: true })
+    //     } catch (error) {
+    //         console.error("Error saving stream to Firebase: ", error)
+    //     }
+    // }
 }
 
 async function getArtistImageUrl(artistId, accessToken) {
