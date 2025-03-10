@@ -6,8 +6,39 @@
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
+}
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    width: 35%;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.heading {
+    font-size:xxx-large;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: italic;
+    color: #fff;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.subheading {
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;  
+    margin-bottom: 10px;
+}
+
+.notice {
+    font-size: small;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
 }
 
 /* .container {
