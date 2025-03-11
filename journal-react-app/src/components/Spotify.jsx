@@ -8,6 +8,7 @@ import { db } from "../Firebase"
 import { Scrollbar } from 'smooth-scrollbar-react';
 import Song from './Song';
 import TopStreamComponent from './TopStream';
+import EmailInput from './EmailInput';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -18,12 +19,14 @@ const Spotify = () => {
     const [topSongs, setTopSongs] = useState(null)
     const [topArtist, setTopArtist] = useState(null)
     const [streamingDataMsg, setStreamingDataMsg] = useState("");
+    const [spotifyEmailEntered, setSpotifyEmailEntered] = useState(false)
+    const [spotifyEmailVerified, setSpotifyEmailVerified] = useState(false)
 
     useEffect(() => {
         const fetchAccessToken = async () => {
             const accessToken = await checkAccessToken();
             if (!accessToken) {
-                console.log("No token user has not logged in");
+                console.log("No token user has not completed spotify auth");
             } else {
                 setShowLogin(false)
                 fetchStreamingData()
@@ -31,6 +34,7 @@ const Spotify = () => {
         };
 
         fetchAccessToken();
+        initialiseUserSpotifyParameters();
     }, [date]);
 
     useEffect(() => {
@@ -43,7 +47,7 @@ const Spotify = () => {
         } else {
             setStreamingDataMsg("Future date has no recorded listening data")
         }
-      }, [date]);
+    }, [date]);
 
     const fetchStreamingData = async () => {
         const userId = currentUser.uid;
@@ -107,6 +111,19 @@ const Spotify = () => {
         }
     }
 
+    // method for checking spotify auth status
+    const initialiseUserSpotifyParameters = async () => {
+        const uid = localStorage.getItem("userID")
+        const docRef = doc(db, `Users/${uid}`)
+        const userDoc = await getDoc(docRef)
+        if (!userDoc.exists()) {
+            await setDoc(doc(db, `Users/${uid}`), { emailedEntered: false, accountVerified: false })
+        } else if (userDoc.exists()) {
+            setSpotifyEmailEntered(userDoc.data().emailEntered)
+            setSpotifyEmailVerified(userDoc.data().emailVerified)
+        };
+    }
+
     const checkAccessToken = async () => {
         let accessToken = null
         const uid = localStorage.getItem("userID")
@@ -162,69 +179,84 @@ const Spotify = () => {
 
     return (
         <div class="outer-spotify-container">
-            {showLogin ? (
+            {/*if the user hasn't entered their spotify email*/}
+            {!spotifyEmailEntered ? (
                 <div>
-                    <div class="login-prompt">To see your daily listening activity, log in to Spotify:</div>
-                    <button class="spotify-login-button" onClick={loginToSpotify}>
-                        <img src="/images/Spotify_Primary_Logo_RGB_Green.png" alt="Spotify Logo" class="spotify-logo" />
-                        <div>Log in to Spotify</div>
-                    </button>
+                    <EmailInput></EmailInput>
                 </div>
+                
             ) : (
-                <Scrollbar style={{ height: '100%', width: '100%' }}>
-                    <div className="inner-spotify-container">
-                        <button onClick={refreshStreamingData} class="refresh-button">Refresh</button>
-                        <div className="primary-layout" >
-                            {topSongs == null || topSongs.length == 0 ? (
-                                <div className="no-data-text" >
-                                    {streamingDataMsg}
+                <div>
+                    {/*if the user has entered their spotify email but have not been verified yet*/}
+                    {spotifyEmailEntered && !spotifyEmailVerified ? (
+                        <div>notify pending auth</div>
+                    ) : (
+                        <div>
+                            {showLogin ? (
+                                <div>
+                                    <div class="login-prompt">To see your daily listening activity, log in to Spotify:</div>
+                                    <button class="spotify-login-button" onClick={loginToSpotify}>
+                                        <img src="/images/Spotify_Primary_Logo_RGB_Green.png" alt="Spotify Logo" class="spotify-logo" />
+                                        <div>Log in to Spotify</div>
+                                    </button>
                                 </div>
                             ) : (
-                                <div class="main-text">
-                                    Your top listening on this day
-                                    <div class="gap"></div>
+                                <Scrollbar style={{ height: '100%', width: '100%' }}>
+                                    <div className="inner-spotify-container">
+                                        <button onClick={refreshStreamingData} class="refresh-button">Refresh</button>
+                                        <div className="primary-layout" >
+                                            {topSongs == null || topSongs.length == 0 ? (
+                                                <div className="no-data-text" >
+                                                    {streamingDataMsg}
+                                                </div>
+                                            ) : (
+                                                <div class="main-text">
+                                                    Your top listening on this day
+                                                    <div class="gap"></div>
 
-                                    <TopStreamComponent
-                                        songName={topSongs[0][0]}
-                                        artistName={topSongs[0][1]}
-                                        albumArt={topSongs[0][2]}
-                                        topArtist={topArtist[0]}
-                                        artistArt={topArtist[1]}
-                                    ></TopStreamComponent>
+                                                    <TopStreamComponent
+                                                        songName={topSongs[0][0]}
+                                                        artistName={topSongs[0][1]}
+                                                        albumArt={topSongs[0][2]}
+                                                        topArtist={topArtist[0]}
+                                                        artistArt={topArtist[1]}
+                                                    ></TopStreamComponent>
 
-                                    <div className="topsongs-container">
-                                        <div className="song-column">
-                                            {topSongs.slice(1, 6).map((stream, index) => (
-                                                <Song
-                                                    key={index}
-                                                    songName={stream[0]}
-                                                    artistName={stream[1]}
-                                                    albumArt={stream[2]}
-                                                    number={index + 2}
-                                                />
-                                            ))}
-                                        </div>
-                                        <div className="song-column">
-                                            {topSongs.slice(6, 11).map((stream, index) => (
-                                                <Song
-                                                    key={index}
-                                                    songName={stream[0]}
-                                                    artistName={stream[1]}
-                                                    albumArt={stream[2]}
-                                                    number={index + 7}
-                                                />
-                                            ))}
+                                                    <div className="topsongs-container">
+                                                        <div className="song-column">
+                                                            {topSongs.slice(1, 6).map((stream, index) => (
+                                                                <Song
+                                                                    key={index}
+                                                                    songName={stream[0]}
+                                                                    artistName={stream[1]}
+                                                                    albumArt={stream[2]}
+                                                                    number={index + 2}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                        <div className="song-column">
+                                                            {topSongs.slice(6, 11).map((stream, index) => (
+                                                                <Song
+                                                                    key={index}
+                                                                    songName={stream[0]}
+                                                                    artistName={stream[1]}
+                                                                    albumArt={stream[2]}
+                                                                    number={index + 7}
+                                                                />
+                                                            ))}
 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                </div>
+                                </Scrollbar>
                             )}
                         </div>
-                    </div>
-                </Scrollbar>
+                    )}
+                </div>
             )}
-
-
         </div>
     )
 }
