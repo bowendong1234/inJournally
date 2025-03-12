@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./EmailInput.css";
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from "../Firebase"
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const EmailInput = ({switchToPending}) => {
     const [email, setEmail] = useState("");
@@ -31,6 +32,15 @@ const EmailInput = ({switchToPending}) => {
         if (userDoc.exists()) {
             await updateDoc(doc(db, `Users/${uid}`), { emailEntered: true, spotifyAccountEmail: email })
         }
+
+        await fetch(`${API_BASE_URL}/spotify/notifyUserEmailEntered`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 'userID': uid, 'email': email })
+        });
+
         switchToPending(email)
     };
 

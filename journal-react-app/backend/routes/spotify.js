@@ -3,13 +3,14 @@ const { getAccessToken, refreshUserStreams } = require('../services/spotifyServi
 const querystring = require('querystring');
 const router = express.Router();
 const axios = require('axios');
-
+const nodemailer = require("nodemailer");
 const dotenv = require('dotenv');
 const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
 dotenv.config({ path: envFile });
 const FRONTEND_URL = process.env.FRONTEND_URL
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+const emailPass = process.env.EMAIL_PASS
 
 router.get('/getAccessToken', async (req, res) => {
     const token = await getAccessToken();
@@ -99,6 +100,41 @@ router.post('/refreshUserStreams', async (req, res) => {
         res.send(results);
     } catch (error) {
         res.status(500).send(error.message);
+    }
+});
+
+// post request to notify email addition
+router.post('/notifyUserEmailEntered', async (req, res) => {
+    console.log("Email Password:", emailPass ? "Loaded" : "Not Loaded"); 
+
+    const { userID, email } = req.body;
+    
+    if (!userID || !email) {
+        return res.status(400).json({ error: "Missing userID or email" });
+    }
+
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: "injournally@gmail.com",
+            pass: emailPass,  // app password not acc password
+        },
+    });
+
+    const mailOptions = {
+        from: "injournally@gmail.com",
+        to: "bowendong123@gmail.com",
+        subject: "User Connected Spotify",
+        text: `User ${userID} just connected their Spotify account using email ${email}`,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully!");
+        res.json({ message: "Email sent successfully!" });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.status(500).json({ error: "Failed to send email" });
     }
 });
 
