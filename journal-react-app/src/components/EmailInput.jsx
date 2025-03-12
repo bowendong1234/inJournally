@@ -1,7 +1,9 @@
 import { useState } from "react";
 import "./EmailInput.css";
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { db } from "../Firebase"
 
-const EmailInput = () => {
+const EmailInput = ({switchToPending}) => {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [isValid, setIsValid] = useState(false);
@@ -21,21 +23,27 @@ const EmailInput = () => {
         }
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         console.log("Email confirmed:", email);
-        // Placeholder function - implement what happens on confirmation
+        const uid = localStorage.getItem("userID")
+        const docRef = doc(db, `Users/${uid}`)
+        const userDoc = await getDoc(docRef)
+        if (userDoc.exists()) {
+            await updateDoc(doc(db, `Users/${uid}`), { emailEntered: true, spotifyAccountEmail: email })
+        }
+        switchToPending(email)
     };
 
     return (
         <div className="email-container">
-            <div>
+            <div class="email-input-heading">
                 Spotify Tracking
             </div>
-            <div>
-            Heads up! inJournally is currently awaiting extension approval from Spotify. If you'd like to use this
-            music tracking feature, please enter the email associated with your Spotify account in the field below.
-            Once approved, you will be able to authenticate with Spotify and see your streaming data! Please note,
-            this process may take up to 36 hours :(
+            <div class="email-input-subheading">
+                Heads up! inJournally is currently awaiting extension approval from Spotify. If you'd like to use this
+                music tracking feature, please enter the email associated with your Spotify account in the field below.
+                Once approved, you will be able to authenticate with Spotify and see your streaming data! Please note,
+                this process may take up to 36 hours.
             </div>
             <input
                 type="email"

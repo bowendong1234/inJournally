@@ -1,10 +1,11 @@
 .email-container {
-    width: 300px;
-    margin: 50px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 70%;
     padding: 20px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
     text-align: center;
 }
 
@@ -20,7 +21,7 @@
 .submit-button {
     width: 100%;
     padding: 10px;
-    background-color: #007bff;
+    background-color: #faa340;
     color: white;
     border: none;
     border-radius: 5px;
@@ -29,13 +30,14 @@
 }
 
 .submit-button:hover {
-    background-color: #0056b3;
+    background-color: #f85220;
 }
 
 .error-message {
     color: red;
     font-size: 14px;
     margin-top: 10px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .confirmation-box {
@@ -44,6 +46,7 @@
     background: #e0f7fa;
     border-radius: 5px;
     text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .confirm-button {
@@ -61,3 +64,26 @@
     background-color: #1e7e34;
 }
 
+
+.email-input-heading {
+    font-size: x-large;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 20px;
+    font-style: normal;
+    font-weight: bold;
+    color: #000000;
+}
+
+.email-input-subheading {
+    font-size: medium;
+    color: #000000;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif; 
+    margin-bottom: 10px;
+}
+
+.notice {
+    font-size: small;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+}

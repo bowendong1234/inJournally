@@ -21,6 +21,7 @@ const Spotify = () => {
     const [streamingDataMsg, setStreamingDataMsg] = useState("");
     const [spotifyEmailEntered, setSpotifyEmailEntered] = useState(false)
     const [spotifyEmailVerified, setSpotifyEmailVerified] = useState(false)
+    const [userSpotifyEmail, setUserSpotifyEmail] = useState("")
 
     useEffect(() => {
         const fetchAccessToken = async () => {
@@ -100,6 +101,11 @@ const Spotify = () => {
         setTopArtist(mostFrequentArtist)
     };
 
+    // method for switching to the email pending tab once email is entered
+    function switchToPending(userSpotifyEmail) {
+            setSpotifyEmailEntered(true)
+            setUserSpotifyEmail(userSpotifyEmail)
+        }
 
     const getAccessToken = async () => {
         try {
@@ -117,11 +123,17 @@ const Spotify = () => {
         const docRef = doc(db, `Users/${uid}`)
         const userDoc = await getDoc(docRef)
         if (!userDoc.exists()) {
-            await setDoc(doc(db, `Users/${uid}`), { emailedEntered: false, accountVerified: false })
+            await setDoc(doc(db, `Users/${uid}`), { emailEntered: false, accountVerified: false })
         } else if (userDoc.exists()) {
             setSpotifyEmailEntered(userDoc.data().emailEntered)
-            setSpotifyEmailVerified(userDoc.data().emailVerified)
+            setSpotifyEmailVerified(userDoc.data().accountVerified)
+            setUserSpotifyEmail(userDoc.data().spotifyAccountEmail)
+            console.log(spotifyEmailEntered)
+            console.log(spotifyEmailVerified)
         };
+        // // TODO: GET RID OF THIS!!! testing piurposes only!!!
+        // setSpotifyEmailEntered(true)
+        // setSpotifyEmailEntered("placeholder@email")
     }
 
     const checkAccessToken = async () => {
@@ -181,17 +193,18 @@ const Spotify = () => {
         <div class="outer-spotify-container">
             {/*if the user hasn't entered their spotify email*/}
             {!spotifyEmailEntered ? (
-                <div>
-                    <EmailInput></EmailInput>
-                </div>
-                
+                <EmailInput switchToPending={switchToPending}></EmailInput>     
             ) : (
-                <div>
+                <div class="division-expander">
                     {/*if the user has entered their spotify email but have not been verified yet*/}
                     {spotifyEmailEntered && !spotifyEmailVerified ? (
-                        <div>notify pending auth</div>
+                        <div class="subheading">
+                        <div>Spotify account email pending approval!</div>
+                        <div>The email associated with your Spotify account you entered was <b>{userSpotifyEmail}</b> and may take up to 36 hours to be approved.</div>
+                        </div>
+
                     ) : (
-                        <div>
+                        <div class="division-expander">
                             {showLogin ? (
                                 <div>
                                     <div class="login-prompt">To see your daily listening activity, log in to Spotify:</div>
