@@ -207,7 +207,7 @@ const Spotify = () => {
                         <div class="division-expander">
                             {showLogin ? (
                                 <div>
-                                    <div class="login-prompt">To see your daily listening activity, log in to Spotify:</div>
+                                    <div class="login-prompt">Email approved! To see your daily listening activity, log in to Spotify:</div>
                                     <button class="spotify-login-button" onClick={loginToSpotify}>
                                         <img src="/images/Spotify_Primary_Logo_RGB_Green.png" alt="Spotify Logo" class="spotify-logo" />
                                         <div>Log in to Spotify</div>
