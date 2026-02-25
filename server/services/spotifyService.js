@@ -186,4 +186,4 @@ async function refreshUserStreams(userID, timeZone) {
 
 }
 
-module.exports = { getAccessToken, pollSpotifyStreams, refreshUserStreams, getUserEmail};
+module.exports = { getAccessToken, pollSpotifyStreams, refreshUserStreams};
