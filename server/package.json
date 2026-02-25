@@ -12,21 +12,21 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.7.9",
-    "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
-    "dayjs": "^1.11.13",
-    "dotenv": "^16.4.7",
-    "express": "^4.19.2",
-    "firebase-admin": "^12.2.0",
+    "axios": "^1.13.5",
+    "cors": "^2.8.6",
+    "cross-env": "^10.1.0",
+    "dayjs": "^1.11.19",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.6.1",
     "fs": "^0.0.1-security",
-    "mime-types": "^2.1.35",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.10.0",
+    "mime-types": "^3.0.2",
+    "multer": "^2.0.2",
+    "nodemailer": "^8.0.1",
     "path": "^0.12.7",
     "querystring": "^0.2.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.14"
   }
 }

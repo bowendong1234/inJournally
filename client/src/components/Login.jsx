@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { firebase } from '../Firebase';
-import 'firebaseui/dist/firebaseui.css';
 import './Login.css';
 import './FormStyles.css';
 import { useAuth } from '../contexts/AuthContext';

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Editor from '../components/Editor.jsx'
 import './EditorPage.css'
 import { useParams, useNavigate } from 'react-router-dom'
-import TopBar from '../components/TopBar';
+import TopBar from '../components/TopBar.jsx';
 import dayjs from 'dayjs';
 import Spotify from '../components/Spotify.jsx'
 
