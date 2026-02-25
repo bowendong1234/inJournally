@@ -1,99 +1,49 @@
 const express = require('express');
-const upload = require('../middleware/upload'); 
-const { uploadToFirebase, getImagesFromFirebase} = require('../services/firebaseService');
-const router = express.Router();
+const path = require('path');
+const upload = require('../middleware/upload');
 const { bucket } = require('../config/firebaseConfig');
-const dotenv = require('dotenv');
-const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
-dotenv.config({ path: envFile });
 
-// // for uploading pictures (new way)
-router.post('/uploadFile', upload.single('image'), (req, res) => {
+const router = express.Router();
+
+router.post('/images/upload', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).send('No file uploaded.');
+      return res.status(400).json({ success: 0, message: 'No file uploaded.' });
     }
-    const {date, userID} = req.body
-    const remoteFilePath = `Users/${userID}/${date}/Images/${req.file.originalname}`;
-    const fileUpload = bucket.file(remoteFilePath)
 
-    // Create a stream to upload file to Firebase Storage
+    const { date, userID } = req.body;
+    if (!date || !userID) {
+      return res.status(400).json({ success: 0, message: 'Missing date or userID.' });
+    }
+
+    const extension = path.extname(req.file.originalname);
+    const baseName = path.basename(req.file.originalname, extension).replace(/[^a-zA-Z0-9-_]/g, '_');
+    const filename = `${Date.now()}-${baseName}${extension}`;
+    const remoteFilePath = `Users/${userID}/${date}/Images/${filename}`;
+
+    const fileUpload = bucket.file(remoteFilePath);
     const stream = fileUpload.createWriteStream({
       metadata: {
         contentType: req.file.mimetype,
       },
     });
 
-    stream.on('error', (err) => {
-      console.error("Upload error:", err);
-      return res.status(500).json({ success: 0, message: "Upload failed" });
+    stream.on('error', (error) => {
+      console.error('Upload error:', error);
+      res.status(500).json({ success: 0, message: 'Upload failed.' });
     });
 
     stream.on('finish', async () => {
       await fileUpload.makePublic();
       const url = `https://storage.googleapis.com/${bucket.name}/${remoteFilePath}`;
-
-      res.send({
-        success: 1,
-        file: {
-          url,
-        },
-      });
+      res.json({ success: 1, file: { url } });
     });
+
     stream.end(req.file.buffer);
-    // res.send({
-    //   success: 1,
-    //   file: {
-    //     url,
-    //   },
-    // });
-  } catch (err) {
-    console.error('Error handling file upload:', err);
+  } catch (error) {
+    console.error('Error handling file upload:', error);
+    res.status(500).json({ success: 0, message: 'Internal server error.' });
   }
-}
-)
-
-
-
-
-// Legacy local upload path is not supported in Cloud Functions.
-router.post('/upload', upload.single('image'), (req, res) => {
-  return res.status(410).json({
-    success: 0,
-    message: 'Deprecated endpoint. Use /api/uploadFile for Firebase Storage uploads.',
-  });
-});
-
-// Route for saving uploaded images to Firebase
-router.post('/uploadToFirebase', upload.single('image'), async (req, res) => {
-    const { userId, date, imageUrls } = req.body;
-    if (!userId || !date || !imageUrls) {
-        return res.status(400).send('Invalid request body.');
-    }
-
-    try {
-        const imageUrlsArray = JSON.parse(imageUrls);
-        const results = await uploadToFirebase(imageUrlsArray, userId, date);
-        res.send(results);
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-});
-
-// Route for retrieving images from Firebase
-router.post('/getImagesFromFirebase', upload.none(), async (req, res) => {
-    const { userId, date, imageUrls } = req.body;
-    if (!userId || !date || !imageUrls) {
-        return res.status(400).send('Invalid request body.');
-    }
-
-    try {
-        const imageUrlsArray = JSON.parse(imageUrls);
-        const results = await getImagesFromFirebase(imageUrlsArray, userId, date);
-        res.send(results);
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
 });
 
 module.exports = router;
