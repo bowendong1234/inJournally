@@ -6,7 +6,6 @@ const { bucket } = require('../config/firebaseConfig');
 const dotenv = require('dotenv');
 const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
 dotenv.config({ path: envFile });
-const API_BASE_URL = process.env.API_URL
 
 // // for uploading pictures (new way)
 router.post('/uploadFile', upload.single('image'), (req, res) => {
@@ -57,26 +56,13 @@ router.post('/uploadFile', upload.single('image'), (req, res) => {
 
 
 
-// for uploading pictures (old way)
+// Legacy local upload path is not supported in Cloud Functions.
 router.post('/upload', upload.single('image'), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).send('No file uploaded.');
-      }
-  
-      // Construct the URL
-      const url = `${API_BASE_URL}/uploads/${req.file.filename}`;
-  
-      res.send({
-        success: 1,
-        file: {
-          url,
-        },
-      });
-    } catch (err) {
-      console.error('Error handling file upload:', err);
-    }
+  return res.status(410).json({
+    success: 0,
+    message: 'Deprecated endpoint. Use /api/uploadFile for Firebase Storage uploads.',
   });
+});
 
 // Route for saving uploaded images to Firebase
 router.post('/uploadToFirebase', upload.single('image'), async (req, res) => {

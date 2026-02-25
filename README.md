@@ -29,16 +29,17 @@ By automatically tracking daily listening activity, each journal entry is paired
 
 ### Backend
 - Node.js
-- Express
+- Firebase Cloud Functions (Node.js runtime)
+- Express (as function handler)
 - Spotify Web API
-- Deployed on Render
+- Deployed on Firebase
 
 ---
 
 ## 🧠 How It Works
 
 1. Users authenticate with Spotify.
-2. The backend polls the Spotify Web API to fetch daily listening data.
+2. Firebase Functions poll the Spotify Web API to fetch daily listening data.
 3. Listening metrics are stored and associated with the user’s journal entry.
 4. The frontend provides the user with a Notion style text editor alongside contextual listening metrics.
 
@@ -67,13 +68,23 @@ Runs on: `http://localhost:5173`
 
 ---
 
-### 3️⃣ Setup the Server
+### 3️⃣ Setup the Server (Functions-compatible)
 
 ```bash
 cd server
 npm install
 npm run dev
 ```
+
+For Firebase emulator usage (after setting up Firebase CLI in your environment):
+
+```bash
+cd server
+npm install
+npm run start
+```
+
+This uses `server/firebase.json` where the Functions source is configured as the `server/` directory.
 
 ---
 
