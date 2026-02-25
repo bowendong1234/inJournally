@@ -55,25 +55,6 @@ async function pollSpotifyStreams() {
             }
         }
     }))
-    // for (const user of users) {
-    //     var accessToken = user.spotifyAccessToken;
-    //     const tokenExpiresAt = user.tokenExpiresAt;
-    //     const spotifyRefreshToken = user.spotifyRefreshToken
-    //     const timeZone = user.userTimeZone
-
-    //     if (accessToken) {
-    //         if (tokenExpiresAt < Date.now()) {
-    //             accessToken = await getNewToken(spotifyRefreshToken, user.uid)
-    //         }
-    //         try {
-    //             const streams = await fetchSpotifyStreams(accessToken);
-
-    //             await saveStreamsToDatabase(user.uid, streams, accessToken, timeZone);
-    //         } catch (err) {
-    //             console.error("error when fetching streams", err)
-    //         }
-    //     }
-    // }
 }
 
 async function fetchSpotifyStreams(accessToken) {
@@ -125,23 +106,6 @@ async function saveStreamsToDatabase(uid, streams, accessToken, timeZone) {
             console.error("Error saving stream to Firebase: ", error)
         }
     }))
-    // for (const stream of streams) {
-    //     const artistName = stream.track.artists[0].name; 
-    //     const artistId = stream.track.artists[0].id
-    //     const songName = stream.track.name;
-    //     const songImageUrl = stream.track.album.images[0].url;
-    //     const artistImageUrl = await getArtistImageUrl(artistId, accessToken)
-    //     const playedAt = dayjs(stream.played_at).tz(timeZone)
-    //     const playDate = playedAt.format("YYYY-MM-DD");
-
-    //     const streamDetails = { artist: artistName, song: songName, song_image_url: songImageUrl, artist_id: artistId, artist_image_url: artistImageUrl }
-    //     const docPath = `Users/${uid}/UserStreaming/${playDate}/Streams/${playedAt.format("YYYY-MM-DD HH:mm:ss Z")}`;
-    //     try {
-    //         await db.doc(docPath).set(streamDetails, { merge: true })
-    //     } catch (error) {
-    //         console.error("Error saving stream to Firebase: ", error)
-    //     }
-    // }
 }
 
 async function getArtistImageUrl(artistId, accessToken) {
@@ -172,7 +136,7 @@ async function getNewToken(spotifyRefreshToken, userID) {
 
         const { access_token, refresh_token, expires_in } = response.data;
         var actual_refresh_token = null
-        if (refresh_token) { // spotify doesn't always return a new refresh token for some reason??? actual refresh token might be old access token documentation not clear
+        if (refresh_token) {
             actual_refresh_token = refresh_token
         } else {
             actual_refresh_token = spotifyRefreshToken

@@ -55,7 +55,7 @@ router.get('/callback', async (req, res) => {
 
         const response = await axios.post('https://accounts.spotify.com/api/token', querystring.stringify({
             code: code,
-            redirect_uri: `${FRONTEND_URL}/spotify/callback`, // TODO: this should be frontend url
+            redirect_uri: `${FRONTEND_URL}/spotify/callback`,
             grant_type: 'authorization_code',
         }), {
             headers: {
@@ -77,7 +77,6 @@ router.get('/callback', async (req, res) => {
     }
 });
 
-// Route for updating streaming data of one specific user
 router.post('/refreshUserStreams', async (req, res) => {
     const { userId, timeZone } = req.body;
     if (!userId) {
@@ -91,7 +90,6 @@ router.post('/refreshUserStreams', async (req, res) => {
     }
 });
 
-// post request to notify email addition
 router.post('/notifyUserEmailEntered', async (req, res) => {
     console.log("Email Password:", emailPass ? "Loaded" : "Not Loaded"); 
 
@@ -105,7 +103,7 @@ router.post('/notifyUserEmailEntered', async (req, res) => {
         service: "gmail",
         auth: {
             user: "injournally@gmail.com",
-            pass: emailPass,  // app password not acc password
+            pass: emailPass,
         },
     });
 
