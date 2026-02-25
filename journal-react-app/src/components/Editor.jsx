@@ -82,55 +82,25 @@ const Editor = React.forwardRef((props, ref) => {
 
   const handleSave = async () => {
     const uid = currentUser.uid;
-    // let imageUrls = [];
     const documentPath = `Users/${uid}/UserEntries/${date.date}`;
     try {
       const outputData = await editorInstance.current.save();
       outputData.blocks.forEach(block => {
-        // if (block.type == "image") {
-        //   imageUrls.push(block.data.file.url)
-        // }
       });
       await setDoc(doc(db, documentPath), { outputData })
     } catch (e) {
       console.error('Saving failed: ', e);
     }
-    
-    // // for saving images
-    // const formData = new FormData();
-    // formData.append('userId', uid);
-    // formData.append('date', date.date);
-    // formData.append('imageUrls', JSON.stringify(imageUrls))
 
-    // try {
-    //   const response = await fetch(`${API_BASE_URL}/api/uploadToFirebase`, {
-    //     method: 'POST',
-    //     body: formData,
-    //   });
-  
-    //   const result = await response.json();
-  
-    //   if (result.success) {
-    //     console.log('Files uploaded to Firebase Storage successfully.');
-    //   } else {
-    //     console.error('Failed to upload files.');
-    //   }
-    // } catch (error) {
-    //   console.error('Error in handleSave:', error);
-    // }
   };
 
   const loadData = async () => {
     const uid = currentUser.uid;
-    // let imageUrls = []
     const docRef = doc(db, `Users/${uid}/UserEntries`, `${date.date}`)
     const entry = await getDoc(docRef);
     if (entry.exists()) {
       journal_entry_data = entry.data().outputData;
       journal_entry_data.blocks.forEach(block => {
-        // if (block.type == "image") {
-        //   imageUrls.push(block.data.file.url)
-        // }
       });
     } else {
       const date_object = dayjs(date.date)
@@ -156,28 +126,6 @@ const Editor = React.forwardRef((props, ref) => {
           }]
       }
     }
-
-    // if (imageUrls.length > 0) {
-    //   const formData = new FormData();
-    //   formData.append('userId', uid);
-    //   formData.append('date', date.date);
-    //   formData.append('imageUrls', JSON.stringify(imageUrls))
-    //   try {
-    //     const response = await fetch(`${API_BASE_URL}/api/getImagesFromFirebase`, { 
-    //       method: 'POST',
-    //       body: formData,
-    //     });
-    //     const result = await response.json();
-    
-    //     // if (result.success) {
-    //     //   console.log('images retrieved successfully.');
-    //     // } else {
-    //     //   console.error('Failed to get images');
-    //     // }
-    //   } catch (error) {
-    //     console.error('Error in load data:', error);
-    //   }
-    // }
     editorInstance.current.render(journal_entry_data);
   }
 

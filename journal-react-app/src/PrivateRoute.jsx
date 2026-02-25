@@ -4,7 +4,6 @@ import { useAuth } from './contexts/AuthContext';
 
 const PrivateRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();
-  // console.log("Current User in PrivateRoute:", currentUser);
 
   if (loading) {
     console.log("Loading authentication state...");

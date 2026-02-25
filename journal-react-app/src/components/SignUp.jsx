@@ -15,9 +15,6 @@ const GoogleSignInButton = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         // Successfully signed in
-        console.log(result.user);
-        console.log(result.user.uid);
-        // localStorage.setItem('userID', result.user.uid);
         navigate('/editor');
       })
       .catch((error) => {

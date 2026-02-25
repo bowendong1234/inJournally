@@ -15,10 +15,8 @@ router.post('/uploadFile', upload.single('image'), (req, res) => {
       return res.status(400).send('No file uploaded.');
     }
     const {date, userID} = req.body
-    // const url = `${API_BASE_URL}/uploads/${req.file.filename}`;
     const remoteFilePath = `Users/${userID}/${date}/Images/${req.file.originalname}`;
     const fileUpload = bucket.file(remoteFilePath)
-    console.log(req.file.originalname)
 
     // Create a stream to upload file to Firebase Storage
     const stream = fileUpload.createWriteStream({

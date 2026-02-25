@@ -45,14 +45,12 @@ const upload = multer({ storage: storage });
 
 // Route for saving uploaded images to firebase
 app.post('/api/uploadToFirebase', upload.single('image'), async (req, res) => {
-  console.log(req.body);
   const { userId, date, imageUrls } = req.body;
   
   if (!userId || !date || !imageUrls) {
     return res.status(400).send('Invalid request body.');
   }
   const imageUrlsArray = JSON.parse(imageUrls);
-  console.log("got here")
 
   const fileUploadPromises = imageUrlsArray.map(async (imageUrl) => {
     const parts = imageUrl.split('/');
@@ -107,20 +105,16 @@ app.post('/api/getImagesFromFirebase', upload.single('image'), async (req, res) 
     return res.status(400).send('Invalid request body.');
   }
   const imageUrlsArray = JSON.parse(imageUrls);
-  console.log("got here")
 
   const fileURetrievalPromises = imageUrlsArray.map(async (imageUrl) => {
     const parts = imageUrl.split('/');
     const filename = parts[parts.length - 1];
     const localFilePath = path.join(__dirname, 'uploads', filename);
     if (!fs.existsSync(localFilePath)) {
-      console.log('getting image');
       const remoteFilePath = `Users/${userId}/${date}/Images/${filename}`;
-      console.log(remoteFilePath)
       const image = bucket.file(remoteFilePath)
       const [exists] = await image.exists();
       if (exists) {
-        console.log("this happeneded")
         const [contents] = await image.download({destination: localFilePath});
       }
     } else {
@@ -129,7 +123,6 @@ app.post('/api/getImagesFromFirebase', upload.single('image'), async (req, res) 
   });
   try {
     const results = await Promise.all(fileURetrievalPromises);
-    console.log(results)
     res.send(results);
   } catch (error) {
     res.status(500).send(error.message);
@@ -147,9 +140,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     }
 
     // Construct the URL
-    console.log("HERE")
     const url = `${API_BASE_URL}/uploads/${req.file.filename}`;
-    console.log(url)
 
     res.send({
       success: 1,

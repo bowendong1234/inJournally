@@ -14,8 +14,6 @@ const EditorPage = () => {
     useEffect(() => {
         if (!date || date=="redirect") {
           const today = dayjs().format('YYYY-MM-DD');
-          console.log("here")
-          console.log(today)
           navigate(`/editor/${today}`);
         }
     }, [date, navigate]);
@@ -35,7 +33,6 @@ const EditorPage = () => {
 
     const handleLoadOnDateChange = () => {
         if (editorRef.current) {
-            console.log(date);
             editorRef.current.loadData();
         }
         

@@ -95,8 +95,6 @@ const Spotify = () => {
             .map(({ artist, artist_image_url }) => [artist, artist_image_url])[0]
 
         // Output sorted songs and most frequent artist
-        // console.log("Sorted Songs by Frequency:", sortedSongs);
-        // console.log("Most Frequent Artist:", mostFrequentArtist);
         setTopSongs(sortedSongs)
         setTopArtist(mostFrequentArtist)
     };
@@ -111,7 +109,6 @@ const Spotify = () => {
         try {
             const response = await fetch(`${API_BASE_URL}/spotify/getAccessToken`) // EDIT URL
             const data = await response.json();
-            console.log(data.token)
         } catch (error) {
             console.error("Error when getting Spotify Access Token", error)
         }
@@ -128,12 +125,7 @@ const Spotify = () => {
             setSpotifyEmailEntered(userDoc.data().emailEntered)
             setSpotifyEmailVerified(userDoc.data().accountVerified)
             setUserSpotifyEmail(userDoc.data().spotifyAccountEmail)
-            console.log(spotifyEmailEntered)
-            console.log(spotifyEmailVerified)
         };
-        // // TODO: GET RID OF THIS!!! testing piurposes only!!!
-        // setSpotifyEmailEntered(true)
-        // setSpotifyEmailEntered("placeholder@email")
     }
 
     const checkAccessToken = async () => {

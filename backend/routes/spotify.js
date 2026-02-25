@@ -20,13 +20,12 @@ router.get('/getAccessToken', async (req, res) => {
 router.get('/authorise', (req, res) => {
     var state = generateRandomString(16);
     var scope = "user-top-read user-read-recently-played"
-    console.log(FRONTEND_URL)
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
             client_id: process.env.SPOTIFY_CLIENT_ID,
             scope: scope,
-            redirect_uri: `${FRONTEND_URL}/spotify/callback`, // TODO: this should be frontend url
+            redirect_uri: `${FRONTEND_URL}/spotify/callback`,
             state: state,
             show_dialog: true
         }));
@@ -66,18 +65,7 @@ router.get('/callback', async (req, res) => {
         });
 
         const { access_token, refresh_token, expires_in } = response.data;
-        console.log("Access Token:", access_token);
-        console.log("refresh Token:", refresh_token);
-        console.log("expire:", expires_in);
-
         res.json({ access_token, refresh_token, expires_in})
-        // res.redirect('/?' +
-        //     querystring.stringify({
-        //         access_token: access_token,
-        //         refresh_token: refresh_token,
-        //         expires_in: expires_in
-        //     })
-        // );
 
     } catch (error) {
         console.error('Error fetching access token:', error);
@@ -130,7 +118,6 @@ router.post('/notifyUserEmailEntered', async (req, res) => {
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully!");
         res.json({ message: "Email sent successfully!" });
     } catch (error) {
         console.error("Error sending email:", error);
