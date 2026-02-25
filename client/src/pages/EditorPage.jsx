@@ -1,0 +1,55 @@
+import React, { useState, useEffect, useRef } from 'react'
+import Editor from '../components/Editor.jsx'
+import './EditorPage.css'
+import { useParams, useNavigate } from 'react-router-dom'
+import TopBar from '../components/TopBar.jsx';
+import dayjs from 'dayjs';
+import Spotify from '../components/Spotify.jsx'
+
+const EditorPage = () => {
+    const navigate = useNavigate();
+    const editorRef = useRef()
+    const { date } = useParams();
+
+    useEffect(() => {
+        if (!date || date=="redirect") {
+          const today = dayjs().format('YYYY-MM-DD');
+          navigate(`/editor/${today}`);
+        }
+    }, [date, navigate]);
+
+    useEffect(() => {
+        if (editorRef.current) {
+            editorRef.current.loadData();
+        }
+    }, [date]);
+  
+    const handleSaveOnDateChange = () => {
+        if (editorRef.current) {
+            editorRef.current.handleSave();
+        }
+        
+    }
+
+    const handleLoadOnDateChange = () => {
+        if (editorRef.current) {
+            editorRef.current.loadData();
+        }
+        
+    }
+
+    return (
+        <div class="background">
+            <TopBar handleSaveOnDateChange={handleSaveOnDateChange}/>
+            <div class="topbar-to-contents-container">
+                <Editor ref={editorRef}/>
+                <div class="right-column-container">
+                    <Spotify></Spotify>
+                </div>
+
+            </div>
+        </div>
+    )
+}
+
+export default EditorPage
