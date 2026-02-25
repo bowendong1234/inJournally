@@ -13,8 +13,7 @@ import dayjs from 'dayjs';
 import { db } from "../Firebase"
 import { useAuth } from '../contexts/AuthContext';
 import { doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+import { buildApiUrl } from '../utils/api';
 
 const Editor = React.forwardRef((props, ref) => {
   const editorInstance = useRef(null);
@@ -44,7 +43,7 @@ const Editor = React.forwardRef((props, ref) => {
           inlineToolbar: true,
           config: {
             endpoints: {
-              byFile: `${API_BASE_URL}/api/uploadFile`,
+              byFile: buildApiUrl('/api/images/upload'),
             },
             additionalRequestData: {
               date: date.date,

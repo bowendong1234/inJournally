@@ -9,8 +9,7 @@ import { Scrollbar } from 'smooth-scrollbar-react';
 import Song from './Song';
 import TopStreamComponent from './TopStream';
 import EmailInput from './EmailInput';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+import { buildApiUrl } from '../utils/api';
 
 const Spotify = () => {
     const { currentUser } = useAuth();
@@ -107,7 +106,7 @@ const Spotify = () => {
 
     const getAccessToken = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/spotify/getAccessToken`) // EDIT URL
+            const response = await fetch(buildApiUrl('/spotify/getAccessToken'))
             const data = await response.json();
         } catch (error) {
             console.error("Error when getting Spotify Access Token", error)
@@ -151,7 +150,7 @@ const Spotify = () => {
             })
         }
         try {
-            window.location.href = `${API_BASE_URL}/spotify/authorise`;
+            window.location.href = buildApiUrl('/spotify/authorise');
         } catch (error) {
             console.error('Error when authorising user', error);
         }
@@ -161,7 +160,7 @@ const Spotify = () => {
         const userId = localStorage.getItem("userID")
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         try {
-            const response = await fetch(`${API_BASE_URL}/spotify/refreshUserStreams`, {
+            const response = await fetch(buildApiUrl('/spotify/refreshUserStreams'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
