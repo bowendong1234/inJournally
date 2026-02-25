@@ -4,8 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env NODE_ENV=production node server.js",
-    "dev": "cross-env NODE_ENV=development nodemon server.js"
+    "start": "firebase emulators:start --only functions --config firebase.json",
+    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "serve": "cross-env NODE_ENV=development node server.js",
+    "deploy": "firebase deploy --only functions --config firebase.json"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +26,8 @@
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
     "path": "^0.12.7",
-    "querystring": "^0.2.1"
+    "querystring": "^0.2.1",
+    "firebase-functions": "^6.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
