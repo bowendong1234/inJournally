@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./EmailInput.css";
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from "../Firebase"
-import { buildApiUrl } from '../utils/api';
+import { db, functions } from "../Firebase"
+import { httpsCallable } from 'firebase/functions';
 
 const EmailInput = ({switchToPending}) => {
     const [email, setEmail] = useState("");
@@ -33,13 +33,8 @@ const EmailInput = ({switchToPending}) => {
             await updateDoc(doc(db, `Users/${uid}`), { emailEntered: true, spotifyAccountEmail: email })
         }
 
-        await fetch(buildApiUrl('/spotify/notifyUserEmailEntered'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 'userID': uid, 'email': email })
-        });
+        const notifyFn = httpsCallable(functions, 'notifyUserEmailEntered');
+        await notifyFn({ email });
 
         switchToPending(email)
     };

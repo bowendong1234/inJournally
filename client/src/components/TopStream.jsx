@@ -1,7 +1,7 @@
 import React from 'react';
 import './TopStream.css';
 
-const TopStreamComponent = ({ songName, artistName, albumArt, topArtist, artistArt }) => {
+const TopStreamComponent = ({ songName, artistName, albumArt, topArtist, artistArt, count, artistCount }) => {
     return (
         <div className="top-stream-container">
             1.
@@ -9,11 +9,17 @@ const TopStreamComponent = ({ songName, artistName, albumArt, topArtist, artistA
             <div className="top-stream-song-info">
                 <h2 className="top-stream-song-name">{songName}</h2>
                 <p className="top-stream-artist-name">{artistName}</p>
+                {count !== undefined && (
+                    <span className="stream-count-badge">{count}×</span>
+                )}
             </div>
             <img src={artistArt} alt={`${artistName} artist photo`} className="top-artist-photo" />
             <div className="top-stream-song-info">
                 <h2 className="top-stream-song-name">{topArtist}</h2>
                 <p className="top-stream-artist-name">Most Streamed Artist Today</p>
+                {artistCount !== undefined && (
+                    <span className="stream-count-badge">{artistCount}×</span>
+                )}
             </div>
         </div>
     );

@@ -1,38 +1,12 @@
 const axios = require('axios');
 const { collection, getDocs, query, where, doc, updateDoc, getDoc } = require('firebase-admin/firestore');
-const { db, serviceAccount } = require('../config/firebaseConfig');
+const { db } = require('../config/firebaseConfig');
 const querystring = require('querystring');
 const dayjs = require('dayjs')
-const dotenv = require('dotenv');
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-async function getAccessToken() {
-    const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
-    dotenv.config({ path: envFile });
-    const clientId = process.env.SPOTIFY_CLIENT_ID;
-    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-
-    const authString = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');  // Encoding clientId:clientSecret to base64
-    try {
-        const response = await axios.post(
-            'https://accounts.spotify.com/api/token',
-            'grant_type=client_credentials',
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Basic ${authString}`,
-                },
-            }
-        );
-        return response.data.access_token;
-    } catch (error) {
-        console.error('Error fetching access token:', error.response ? error.response.data : error.message);
-        throw new Error('Failed to get access token');
-    }
-}
 
 async function pollSpotifyStreams() {
     const users = await getUsersFromFirebase();
@@ -150,12 +124,8 @@ async function getNewToken(spotifyRefreshToken, userID) {
         return access_token
 
     } catch (error) {
-        console.error('Error fetching access token:', error);
-        res.redirect('/?' +
-            querystring.stringify({
-                error: 'invalid_token'
-            })
-        );
+        console.error('Error refreshing access token:', error);
+        throw error;
     }
 }
 
@@ -186,4 +156,4 @@ async function refreshUserStreams(userID, timeZone) {
 
 }
 
-module.exports = { getAccessToken, pollSpotifyStreams, refreshUserStreams};
+module.exports = { pollSpotifyStreams, refreshUserStreams };

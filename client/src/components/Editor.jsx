@@ -5,15 +5,15 @@ import ImageTool from '@editorjs/image'
 import Link from '@editorjs/link'
 import Checklist from '@editorjs/checklist'
 import Embed from '@editorjs/embed'
-import React, { useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef } from 'react';
 import "./Editor.css"
-import {Scrollbar} from 'smooth-scrollbar-react';
+import { Scrollbar } from 'smooth-scrollbar-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { db } from "../Firebase"
+import { db, storage } from "../Firebase"
 import { useAuth } from '../contexts/AuthContext';
-import { doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
-import { buildApiUrl } from '../utils/api';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Editor = React.forwardRef((props, ref) => {
   const editorInstance = useRef(null);
@@ -21,7 +21,26 @@ const Editor = React.forwardRef((props, ref) => {
   const { currentUser } = useAuth();
   const date = useParams();
 
-  // TODO check if data already exists for the date
+  // Refs so the EditorJS uploader (initialised once) always sees the latest values.
+  const dateRef = useRef(date);
+  const userRef = useRef(currentUser);
+  useEffect(() => { dateRef.current = date; }, [date]);
+  useEffect(() => { userRef.current = currentUser; }, [currentUser]);
+
+  // Upload an image file directly to Firebase Storage and return the download URL.
+  // Using a ref wrapper so EditorJS (initialised with [] deps) always calls the latest version.
+  const uploadImageRef = useRef(null);
+  uploadImageRef.current = async (file) => {
+    const uid = userRef.current.uid;
+    const currentDate = dateRef.current.date;
+    const safeName = file.name.replace(/[^a-zA-Z0-9-_.]/g, '_');
+    const filename = `${Date.now()}-${safeName}`;
+    const fileRef = storageRef(storage, `Users/${uid}/${currentDate}/Images/${filename}`);
+    await uploadBytes(fileRef, file);
+    const url = await getDownloadURL(fileRef);
+    return { success: 1, file: { url } };
+  };
+
   let journal_entry_data = {}
 
   useEffect(() => {
@@ -42,14 +61,10 @@ const Editor = React.forwardRef((props, ref) => {
           class: ImageTool,
           inlineToolbar: true,
           config: {
-            endpoints: {
-              byFile: buildApiUrl('/api/images/upload'),
+            uploader: {
+              uploadByFile: (file) => uploadImageRef.current(file),
             },
-            additionalRequestData: {
-              date: date.date,
-              userID: currentUser.uid
-            }
-          }
+          },
         },
         link: {
           class: Link,
@@ -84,13 +99,10 @@ const Editor = React.forwardRef((props, ref) => {
     const documentPath = `Users/${uid}/UserEntries/${date.date}`;
     try {
       const outputData = await editorInstance.current.save();
-      outputData.blocks.forEach(block => {
-      });
       await setDoc(doc(db, documentPath), { outputData })
     } catch (e) {
       console.error('Saving failed: ', e);
     }
-
   };
 
   const loadData = async () => {
@@ -99,8 +111,6 @@ const Editor = React.forwardRef((props, ref) => {
     const entry = await getDoc(docRef);
     if (entry.exists()) {
       journal_entry_data = entry.data().outputData;
-      journal_entry_data.blocks.forEach(block => {
-      });
     } else {
       const date_object = dayjs(date.date)
       const day_number = date_object.format('D')
@@ -116,12 +126,12 @@ const Editor = React.forwardRef((props, ref) => {
       journal_entry_data = {
         "blocks": [
           {
-              "id": "doesnt matter",
-              "type": "header",
-              "data": {
-                "text": formatted_date,
-                "level": 2
-              }
+            "id": "doesnt matter",
+            "type": "header",
+            "data": {
+              "text": formatted_date,
+              "level": 2
+            }
           }]
       }
     }
@@ -144,5 +154,5 @@ const Editor = React.forwardRef((props, ref) => {
     </div>
   );
 });
-  
+
 export default Editor
