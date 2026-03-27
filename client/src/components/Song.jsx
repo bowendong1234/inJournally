@@ -1,7 +1,7 @@
 import React from 'react';
 import './Song.css';
 
-const Song = ({ songName, artistName, albumArt, number }) => {
+const Song = ({ songName, artistName, albumArt, number, count }) => {
     return (
         <div className="song-container">
             {number + "."}
@@ -10,6 +10,9 @@ const Song = ({ songName, artistName, albumArt, number }) => {
                 <h2 className="song-name">{songName}</h2>
                 <p className="artist-name">{artistName}</p>
             </div>
+            {count !== undefined && (
+                <span className="stream-count-badge">{count}×</span>
+            )}
         </div>
     );
 };

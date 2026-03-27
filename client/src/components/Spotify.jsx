@@ -1,15 +1,18 @@
-import { React, useEffect, useState } from 'react';
+import { React, useEffect, useState, useRef } from 'react';
 import './Spotify.css'
 import dayjs from 'dayjs';
 import { doc, setDoc, updateDoc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router-dom';
-import { db } from "../Firebase"
+import { db, functions } from "../Firebase"
+import { httpsCallable } from 'firebase/functions';
 import { Scrollbar } from 'smooth-scrollbar-react';
 import Song from './Song';
 import TopStreamComponent from './TopStream';
 import EmailInput from './EmailInput';
-import { buildApiUrl } from '../utils/api';
+import { buildFunctionUrl } from '../utils/api';
+
+const REFRESH_COOLDOWN_MS = 30000;
 
 const Spotify = () => {
     const { currentUser } = useAuth();
@@ -17,10 +20,15 @@ const Spotify = () => {
     const [showLogin, setShowLogin] = useState(true);
     const [topSongs, setTopSongs] = useState(null)
     const [topArtist, setTopArtist] = useState(null)
+    const [allStreamsRaw, setAllStreamsRaw] = useState([])
     const [streamingDataMsg, setStreamingDataMsg] = useState("");
     const [spotifyEmailEntered, setSpotifyEmailEntered] = useState(false)
     const [spotifyEmailVerified, setSpotifyEmailVerified] = useState(false)
     const [userSpotifyEmail, setUserSpotifyEmail] = useState("")
+    const [viewMode, setViewMode] = useState('top')
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const [refreshCooldown, setRefreshCooldown] = useState(false)
+    const cooldownTimerRef = useRef(null)
 
     useEffect(() => {
         const fetchAccessToken = async () => {
@@ -49,6 +57,13 @@ const Spotify = () => {
         }
     }, [date]);
 
+    // Clean up cooldown timer on unmount
+    useEffect(() => {
+        return () => {
+            if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+        };
+    }, []);
+
     const fetchStreamingData = async () => {
         const userId = currentUser.uid;
         if (!date || date == "redirect") {
@@ -57,26 +72,32 @@ const Spotify = () => {
         const ref = collection(db, "Users", userId, "UserStreaming", date.date, "Streams")
         const querySnap = await getDocs(ref)
         let allStreams = []
+        let rawStreams = []
         querySnap.forEach((docSnap) => {
             const streamData = docSnap.data()
+            const timestamp = docSnap.id
+            // Document ID format: "YYYY-MM-DD HH:mm:ss Z" — extract HH:mm for display
+            const timeParts = timestamp.split(' ')
+            const timeOfDay = timeParts[1] ? timeParts[1].substring(0, 5) : ''
             allStreams.push([streamData.song, streamData.artist, streamData.song_image_url, streamData.artist_id, streamData.artist_image_url])
+            rawStreams.push({ song: streamData.song, artist: streamData.artist, albumArt: streamData.song_image_url, time: timeOfDay, timestamp })
         })
+        // Sort raw streams chronologically by timestamp string (format is lexicographically sortable)
+        rawStreams.sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+        setAllStreamsRaw(rawStreams)
         calculateTop(allStreams)
-
     };
 
     const calculateTop = (allStreams) => {
         const songFrequencyMap = {};
         const artistFrequencyMap = {};
         allStreams.forEach(([song, artist, song_image_url, artist_id, artist_image_url]) => {
-            // song frequencies
             const songKey = `${song}:${artist}`;
             if (songFrequencyMap[songKey]) {
                 songFrequencyMap[songKey].count += 1;
             } else {
                 songFrequencyMap[songKey] = { count: 1, song, artist, song_image_url, artist_id };
             }
-            // artist frequencies
             if (artistFrequencyMap[artist_id]) {
                 artistFrequencyMap[artist_id].count += 1;
             } else {
@@ -86,34 +107,21 @@ const Spotify = () => {
 
         const sortedSongs = Object.values(songFrequencyMap)
             .sort((a, b) => b.count - a.count)
-            .map(({ song, artist, song_image_url }) => [song, artist, song_image_url]);
+            .map(({ song, artist, song_image_url, count }) => ({ song, artist, song_image_url, count }));
 
-        // Finding the most frequent artist
         const mostFrequentArtist = Object.values(artistFrequencyMap)
             .sort((a, b) => b.count - a.count)
-            .map(({ artist, artist_image_url }) => [artist, artist_image_url])[0]
+            .map(({ artist, artist_image_url, count }) => [artist, artist_image_url, count])[0]
 
-        // Output sorted songs and most frequent artist
         setTopSongs(sortedSongs)
         setTopArtist(mostFrequentArtist)
     };
 
-    // method for switching to the email pending tab once email is entered
     function switchToPending(userSpotifyEmail) {
-            setSpotifyEmailEntered(true)
-            setUserSpotifyEmail(userSpotifyEmail)
-        }
-
-    const getAccessToken = async () => {
-        try {
-            const response = await fetch(buildApiUrl('/spotify/getAccessToken'))
-            const data = await response.json();
-        } catch (error) {
-            console.error("Error when getting Spotify Access Token", error)
-        }
+        setSpotifyEmailEntered(true)
+        setUserSpotifyEmail(userSpotifyEmail)
     }
 
-    // method for checking spotify auth status
     const initialiseUserSpotifyParameters = async () => {
         const uid = localStorage.getItem("userID")
         const docRef = doc(db, `Users/${uid}`)
@@ -150,50 +158,46 @@ const Spotify = () => {
             })
         }
         try {
-            window.location.href = buildApiUrl('/spotify/authorise');
+            window.location.href = buildFunctionUrl('spotifyAuthorise');
         } catch (error) {
             console.error('Error when authorising user', error);
         }
     };
 
     const refreshStreamingData = async () => {
-        const userId = localStorage.getItem("userID")
+        if (refreshCooldown || isRefreshing) return;
+
+        setIsRefreshing(true)
+        setRefreshCooldown(true)
+
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         try {
-            const response = await fetch(buildApiUrl('/spotify/refreshUserStreams'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 'userId': userId, 'timeZone': userTimeZone })
-            });
-            const result = await response.json();
-            if (result.success) {
-                console.log('Streams refreshed successfully.');
+            const refreshFn = httpsCallable(functions, 'refreshUserStreams');
+            const result = await refreshFn({ timeZone: userTimeZone });
+            if (result.data.success) {
                 fetchStreamingData()
             } else {
                 console.error('Stream refresh failed :(');
             }
         } catch (error) {
             console.error("Error refreshing streams: ", error)
+        } finally {
+            setIsRefreshing(false)
+            cooldownTimerRef.current = setTimeout(() => setRefreshCooldown(false), REFRESH_COOLDOWN_MS)
         }
-
     }
 
     return (
         <div class="outer-spotify-container">
-            {/*if the user hasn't entered their spotify email*/}
             {!spotifyEmailEntered ? (
-                <EmailInput switchToPending={switchToPending}></EmailInput>     
+                <EmailInput switchToPending={switchToPending}></EmailInput>
             ) : (
                 <div class="division-expander">
-                    {/*if the user has entered their spotify email but have not been verified yet*/}
                     {spotifyEmailEntered && !spotifyEmailVerified ? (
                         <div class="subheading">
-                        <div>Spotify account email pending approval!</div>
-                        <div>The email associated with your Spotify account you entered was <b>{userSpotifyEmail}</b> and may take up to 36 hours to be approved.</div>
+                            <div>Spotify account email pending approval!</div>
+                            <div>The email associated with your Spotify account you entered was <b>{userSpotifyEmail}</b> and may take up to 36 hours to be approved.</div>
                         </div>
-
                     ) : (
                         <div class="division-expander">
                             {showLogin ? (
@@ -207,34 +211,60 @@ const Spotify = () => {
                             ) : (
                                 <Scrollbar style={{ height: '100%', width: '100%' }}>
                                     <div className="inner-spotify-container">
-                                        <button onClick={refreshStreamingData} class="refresh-button">Refresh</button>
-                                        <div className="primary-layout" >
+                                        <div className="spotify-controls">
+                                            <button
+                                                onClick={refreshStreamingData}
+                                                className="refresh-button"
+                                                disabled={refreshCooldown || isRefreshing}
+                                            >
+                                                {isRefreshing ? 'Refreshing...' : refreshCooldown ? 'Wait...' : 'Refresh'}
+                                            </button>
+                                            <div className="view-toggle-container">
+                                                <button
+                                                    className={`toggle-btn ${viewMode === 'top' ? 'active' : ''}`}
+                                                    onClick={() => setViewMode('top')}
+                                                >
+                                                    Top Songs
+                                                </button>
+                                                <button
+                                                    className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                                                    onClick={() => setViewMode('list')}
+                                                >
+                                                    All Streams
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="primary-layout">
                                             {topSongs == null || topSongs.length == 0 ? (
-                                                <div className="no-data-text" >
+                                                <div className="no-data-text">
                                                     {streamingDataMsg}
                                                 </div>
-                                            ) : (
+                                            ) : viewMode === 'top' ? (
                                                 <div class="main-text">
                                                     Your top listening on this day
                                                     <div class="gap"></div>
 
                                                     <TopStreamComponent
-                                                        songName={topSongs[0][0]}
-                                                        artistName={topSongs[0][1]}
-                                                        albumArt={topSongs[0][2]}
+                                                        songName={topSongs[0].song}
+                                                        artistName={topSongs[0].artist}
+                                                        albumArt={topSongs[0].song_image_url}
                                                         topArtist={topArtist[0]}
                                                         artistArt={topArtist[1]}
-                                                    ></TopStreamComponent>
+                                                        artistCount={topArtist[2]}
+                                                        count={topSongs[0].count}
+                                                    />
 
                                                     <div className="topsongs-container">
                                                         <div className="song-column">
                                                             {topSongs.slice(1, 6).map((stream, index) => (
                                                                 <Song
                                                                     key={index}
-                                                                    songName={stream[0]}
-                                                                    artistName={stream[1]}
-                                                                    albumArt={stream[2]}
+                                                                    songName={stream.song}
+                                                                    artistName={stream.artist}
+                                                                    albumArt={stream.song_image_url}
                                                                     number={index + 2}
+                                                                    count={stream.count}
                                                                 />
                                                             ))}
                                                         </div>
@@ -242,14 +272,31 @@ const Spotify = () => {
                                                             {topSongs.slice(6, 11).map((stream, index) => (
                                                                 <Song
                                                                     key={index}
-                                                                    songName={stream[0]}
-                                                                    artistName={stream[1]}
-                                                                    albumArt={stream[2]}
+                                                                    songName={stream.song}
+                                                                    artistName={stream.artist}
+                                                                    albumArt={stream.song_image_url}
                                                                     number={index + 7}
+                                                                    count={stream.count}
                                                                 />
                                                             ))}
-
                                                         </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="streams-list-container">
+                                                    <div class="spotify-section-heading">All streams on this day</div>
+                                                    <div class="gap"></div>
+                                                    <div className="streams-list">
+                                                        {allStreamsRaw.map((stream, index) => (
+                                                            <div key={index} className="stream-list-item">
+                                                                <span className="stream-time">{stream.time}</span>
+                                                                <img src={stream.albumArt} alt={`${stream.song} album art`} className="stream-list-album-art" />
+                                                                <div className="stream-list-info">
+                                                                    <div className="stream-list-song">{stream.song}</div>
+                                                                    <div className="stream-list-artist">{stream.artist}</div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             )}
@@ -264,6 +311,5 @@ const Spotify = () => {
         </div>
     )
 }
-
 
 export default Spotify;

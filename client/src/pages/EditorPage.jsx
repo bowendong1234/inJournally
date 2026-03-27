@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Editor from '../components/Editor.jsx'
 import './EditorPage.css'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -27,13 +27,6 @@ const EditorPage = () => {
     const handleSaveOnDateChange = () => {
         if (editorRef.current) {
             editorRef.current.handleSave();
-        }
-        
-    }
-
-    const handleLoadOnDateChange = () => {
-        if (editorRef.current) {
-            editorRef.current.loadData();
         }
         
     }

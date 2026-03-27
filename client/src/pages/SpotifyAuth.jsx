@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useAuth } from "../contexts/AuthContext"
 import { doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from "../Firebase"
-import { buildApiUrl } from '../utils/api';
+import { buildFunctionUrl } from '../utils/api';
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs';
 
@@ -50,7 +50,7 @@ const SpotifyAuth = () => {
 
         if (code) {
             // Call the backend with the authorization code
-            fetch(buildApiUrl(`/spotify/callback?code=${code}`))
+            fetch(buildFunctionUrl('spotifyCallback') + `?code=${code}`)
                 .then(response => response.json())
                 .then(data => {
                     saveSpotifyTokens(data)

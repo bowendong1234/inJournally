@@ -17,7 +17,97 @@
     background-color: #ffffff;
     border-radius: 1px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+}
+
+.spotify-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2%;
+    padding-left: 14px;
+}
+
+.view-toggle-container {
+    display: flex;
+    gap: 3px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #666;
+    transition: background-color 0.2s, color 0.2s;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.toggle-btn.active {
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.streams-list-container {
+    width: 100%;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.streams-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.stream-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 4px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.stream-time {
+    font-size: 12px;
+    color: #888;
+    min-width: 38px;
+    font-family: monospace;
+}
+
+.stream-list-album-art {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.stream-list-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.stream-list-song {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stream-list-artist {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .spotify-login-button {
@@ -93,22 +183,34 @@
     width: 100%;
 }
 
+.spotify-section-heading {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: bold;
+    font-size: large;
+    width: 100%;
+}
+
 .gap{
     height: 20px;
 }
 
 .refresh-button {
-    width: 80px;
+    width: 100px;
     height: 30px;
-    margin-left: 14px;
     background-color: #faa340;
     border: none;
     border-radius: 8px;
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-bottom: 2%;
-  }
+    font-size: 13px;
+}
+
+.refresh-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
 
 .subheading {
     font-size: medium;
